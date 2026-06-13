@@ -42,6 +42,8 @@ startup_hook: Optional[Callable[[], Any]] = None
 _dashboard_runtime_token = secrets.token_urlsafe(32)
 _last_periodic_trades_hash: Optional[str] = None
 _DASHBOARD_STATE_TRADE_LIMIT = 80
+_HISTORICAL_TRADE_PAGE_SIZE = 100
+_latest_full_trades_payload: Dict[str, Any] = {}
 
 
 def _dashboard_token() -> str:
@@ -466,19 +468,157 @@ class DashboardState:
 
 dashboard_state = DashboardState()
 
+def _coerce_bool(value: Any, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    if isinstance(value, (int, float)):
+        return value != 0
+    text = str(value).strip().lower()
+    if text in {"1", "true", "yes", "y", "on"}:
+        return True
+    if text in {"0", "false", "no", "n", "off", ""}:
+        return False
+    return bool(value)
+
+
+def _scanner_is_historical() -> bool:
+    return bool(scanner_ref and str(getattr(scanner_ref, "mode", "") or "").upper() == "HISTORICAL")
+
+
+def _scanner_is_historical_building() -> bool:
+    if not _scanner_is_historical() or not scanner_ref:
+        return False
+    recalc = getattr(scanner_ref, "_recalculation_status", {}) or {}
+    recalc_status = str(recalc.get("status", "") or "").lower()
+    if recalc_status in {"worker_running", "applying", "running"}:
+        return True
+    if bool(getattr(scanner_ref, "_calculation_lock", False)) or bool(getattr(scanner_ref, "is_calculating", False)):
+        return True
+    return int(getattr(scanner_ref, "scan_count", 0) or 0) == 0
+
+
+def _current_trade_context() -> Dict[str, Any]:
+    settings = get_settings()
+    return {
+        "mode": str(getattr(scanner_ref, "mode", "") or "").upper() if scanner_ref else "",
+        "backtest_days": int(getattr(scanner_ref, "backtest_days", getattr(settings, "default_backtest_days", 1)) or 1),
+        "inst_pref": str(getattr(scanner_ref, "inst_pref", getattr(settings, "inst_pref", "AUTO")) or "AUTO").upper(),
+        "ut_concurrency_guard": _coerce_bool(getattr(settings, "ut_concurrency_guard", True), True),
+        "grade_preference": str(getattr(settings, "signal_grade_preference", "auto") or "auto"),
+        "timeframe_entry_policy": str(getattr(settings, "ut_timeframe_entry_policy", "PRIMARY_15") or "PRIMARY_15").upper(),
+    }
+
+
+def _cached_trades_match_current_context(cached: Dict[str, Any]) -> bool:
+    if not isinstance(cached, dict) or not _payload_matches_scanner_mode({"trades": cached}):
+        return False
+    if not _scanner_is_historical():
+        return True
+
+    meta = cached.get("meta") if isinstance(cached.get("meta"), dict) else {}
+    if meta.get("complete") is not True:
+        return False
+    expected = _current_trade_context()
+    if str(meta.get("mode", "") or "").upper() != expected["mode"]:
+        return False
+    for key in ("backtest_days", "inst_pref", "grade_preference", "timeframe_entry_policy"):
+        if key not in meta:
+            return False
+        if str(meta.get(key, "") or "").upper() != str(expected[key]).upper():
+            return False
+    if "ut_concurrency_guard" not in meta:
+        return False
+    return _coerce_bool(meta.get("ut_concurrency_guard"), True) == expected["ut_concurrency_guard"]
+
+
+def _trade_payload_is_windowed(payload: Dict[str, Any]) -> bool:
+    if not isinstance(payload, dict) or not isinstance(payload.get("window"), dict):
+        return False
+    for key in ("closed", "signals"):
+        total = int(payload.get(f"{key}_total") or 0)
+        visible = len(payload.get(key) or [])
+        if total > visible:
+            return True
+    return False
+
+
+def _building_trades_payload() -> Dict[str, Any]:
+    expected = _current_trade_context()
+    recalc = getattr(scanner_ref, "_recalculation_status", {}) or {} if scanner_ref else {}
+    return {
+        "open": [],
+        "closed": [],
+        "signals": [],
+        "summary": {
+            "daily_pnl": 0.0,
+            "fut_pnl": 0.0,
+            "opt_pnl": 0.0,
+            "total_trades": 0,
+            "open_count": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_rate": 0.0,
+        },
+        "meta": {
+            **expected,
+            "simulation_id": int(getattr(scanner_ref, "simulation_id", 0) or 0) if scanner_ref else 0,
+            "complete": False,
+            "building": True,
+            "recalculation_status": str(recalc.get("status", "") or ""),
+            "source": "historical_building_guard",
+        },
+    }
+
+
+def _build_fresh_trades_payload() -> Dict[str, Any]:
+    global _latest_full_trades_payload
+    if not scanner_ref:
+        return {"open": [], "closed": [], "summary": {}, "signals": []}
+    if hasattr(scanner_ref, "_build_dashboard_trade_payload"):
+        payload = make_serializable(scanner_ref._build_dashboard_trade_payload())
+    else:
+        payload = make_serializable(scanner_ref.trades.get_dashboard_payload(
+            is_historical=(scanner_ref.mode == "HISTORICAL"),
+            backtest_days=scanner_ref.backtest_days,
+        ))
+    if not _trade_payload_is_windowed(payload):
+        _latest_full_trades_payload = payload
+    try:
+        if hasattr(scanner_ref, "dashboard_cache"):
+            state = dict(scanner_ref.dashboard_cache.state() or getattr(scanner_ref, "latest_results", {}) or {})
+            state["mode"] = getattr(scanner_ref, "mode", None)
+            if hasattr(scanner_ref, "get_broadcast_config"):
+                state["config"] = scanner_ref.get_broadcast_config()
+            if hasattr(scanner_ref, "_get_diagnostics_payload"):
+                state["diagnostics"] = scanner_ref._get_diagnostics_payload()
+            state["simulation_id"] = int(getattr(scanner_ref, "simulation_id", 0) or 0)
+            state["trades"] = payload
+            scanner_ref.dashboard_cache.update(state)
+    except Exception:
+        logger.debug("Unable to refresh dashboard trade cache", exc_info=True)
+    return payload
+
+
 def build_trades_payload() -> Dict[str, Any]:
     if not scanner_ref:
         return {"open": [], "closed": [], "summary": {}, "signals": []}
+    if (
+        dashboard_state.latest_safe_state
+        and _payload_matches_scanner_mode(dashboard_state.latest_safe_state)
+        and isinstance(dashboard_state.latest_safe_state.get("trades"), dict)
+        and not _trade_payload_is_windowed(dashboard_state.latest_safe_state["trades"])
+        and _cached_trades_match_current_context(dashboard_state.latest_safe_state["trades"])
+    ):
+        return dashboard_state.latest_safe_state["trades"]
     if hasattr(scanner_ref, "dashboard_cache"):
         cached = scanner_ref.dashboard_cache.trades()
-        if cached and _payload_matches_scanner_mode({"trades": cached}):
+        if cached and not _trade_payload_is_windowed(cached) and _cached_trades_match_current_context(cached):
             return cached
-    if hasattr(scanner_ref, "_build_dashboard_trade_payload"):
-        return make_serializable(scanner_ref._build_dashboard_trade_payload())
-    return make_serializable(scanner_ref.trades.get_dashboard_payload(
-        is_historical=(scanner_ref.mode == "HISTORICAL"),
-        backtest_days=scanner_ref.backtest_days,
-    ))
+    if _scanner_is_historical_building():
+        return _building_trades_payload()
+    return _build_fresh_trades_payload()
 
 
 def _payload_matches_scanner_mode(payload: Dict[str, Any]) -> bool:
@@ -499,8 +639,12 @@ def _payload_matches_scanner_mode(payload: Dict[str, Any]) -> bool:
 
 async def broadcast(data: Dict):
     """Broadcast delta payloads to all connected WebSocket clients"""
+    global _latest_full_trades_payload
     payload = dict(data or {})
     payload["dashboard_heartbeat"] = _dashboard_heartbeat()
+    incoming_trades = payload.get("trades")
+    if isinstance(incoming_trades, dict) and not _trade_payload_is_windowed(incoming_trades):
+        _latest_full_trades_payload = make_serializable(incoming_trades)
     safe_data = make_serializable(_lighten_state_payload(payload))
     
     async with dashboard_state.lock:
@@ -778,35 +922,47 @@ async def api_fyers_auth_complete(request: Request):
 
 def _window_trades_payload(payload: Dict[str, Any], limit: int | None, offset: int = 0) -> Dict[str, Any]:
     settings = get_settings()
-    is_hist = "scanner_ref" in globals() and scanner_ref and getattr(scanner_ref, "mode", None) == "HISTORICAL"
-    if is_hist:
-        max_limit = 50000
-        default_limit = 50000
-        resolved_limit = max(1, min(max_limit, int(limit or default_limit)))
-    else:
-        max_limit = max(1, int(getattr(settings, "api_max_trade_limit", 1000) or 1000))
-        default_limit = max(1, int(getattr(settings, "api_default_trade_limit", 250) or 250))
-        resolved_limit = max(1, min(max_limit, int(limit or default_limit)))
+    max_limit = 2000
+    default_limit = max(1, int(getattr(settings, "api_default_trade_limit", _HISTORICAL_TRADE_PAGE_SIZE) or _HISTORICAL_TRADE_PAGE_SIZE))
+    resolved_limit = max(1, min(max_limit, int(limit or default_limit)))
     resolved_offset = max(0, int(offset or 0))
     windowed = dict(payload or {})
-    for key in ("closed", "signals"):
-        rows = list(windowed.get(key) or [])
+    row_sets = {key: list(windowed.get(key) or []) for key in ("closed", "signals")}
+    summary_total = 0
+    try:
+        summary_total = int((windowed.get("summary") or {}).get("total_trades") or 0)
+    except Exception:
+        summary_total = 0
+    total_rows = max(
+        len(row_sets["closed"]),
+        len(row_sets["signals"]),
+        summary_total,
+    )
+    page_count = max(1, (total_rows + resolved_limit - 1) // resolved_limit)
+    if total_rows > 0 and resolved_offset >= total_rows:
+        resolved_offset = (page_count - 1) * resolved_limit
+    for key, rows in row_sets.items():
         windowed[key] = rows[resolved_offset: resolved_offset + resolved_limit]
         windowed[f"{key}_total"] = len(rows)
     windowed["window"] = {
         "limit": resolved_limit,
         "offset": resolved_offset,
         "max_limit": max_limit,
+        "page": (resolved_offset // resolved_limit) + 1,
+        "page_size": resolved_limit,
+        "page_count": page_count,
+        "total": total_rows,
     }
     return windowed
 
 
 def _limit_dashboard_trades(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """Keep live dashboard payloads small; full history remains available via /api/trades."""
+    """Keep dashboard payloads small; paged history remains available via /api/trades."""
     windowed = dict(payload or {})
     trades = windowed.get("trades")
     if isinstance(trades, dict):
-        windowed["trades"] = _window_trades_payload(trades, _DASHBOARD_STATE_TRADE_LIMIT, 0)
+        limit = _HISTORICAL_TRADE_PAGE_SIZE if _scanner_is_historical() else _DASHBOARD_STATE_TRADE_LIMIT
+        windowed["trades"] = _window_trades_payload(trades, limit, 0)
     return windowed
 
 
@@ -841,16 +997,26 @@ def _lighten_state_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
 async def api_trades(limit: int | None = None, offset: int = 0):
     if not scanner_ref:
         return {"open": [], "closed": [], "signals": [], "summary": {}}
-    if hasattr(scanner_ref, "dashboard_cache"):
-        cached = scanner_ref.dashboard_cache.trades()
-        if cached and _payload_matches_scanner_mode({"trades": cached}):
-            return _window_trades_payload(cached, limit, offset)
+    if (
+        _latest_full_trades_payload
+        and not _trade_payload_is_windowed(_latest_full_trades_payload)
+        and _cached_trades_match_current_context(_latest_full_trades_payload)
+    ):
+        return _window_trades_payload(_latest_full_trades_payload, limit, offset)
     if (
         dashboard_state.latest_safe_state
         and _payload_matches_scanner_mode(dashboard_state.latest_safe_state)
         and isinstance(dashboard_state.latest_safe_state.get("trades"), dict)
+        and not _trade_payload_is_windowed(dashboard_state.latest_safe_state["trades"])
+        and _cached_trades_match_current_context(dashboard_state.latest_safe_state["trades"])
     ):
         return _window_trades_payload(dashboard_state.latest_safe_state["trades"], limit, offset)
+    if hasattr(scanner_ref, "dashboard_cache"):
+        cached = scanner_ref.dashboard_cache.trades()
+        if cached and not _trade_payload_is_windowed(cached) and _cached_trades_match_current_context(cached):
+            return _window_trades_payload(cached, limit, offset)
+    if _scanner_is_historical_building():
+        return _window_trades_payload(_building_trades_payload(), limit, offset)
     return _window_trades_payload(build_trades_payload(), limit, offset)
 
 
@@ -862,11 +1028,9 @@ async def periodic_trades_updater():
         try:
             await asyncio.sleep(1.0)
             if scanner_ref and active_connections:
-                if hasattr(scanner_ref, "dashboard_cache"):
-                    trades = scanner_ref.dashboard_cache.trades()
-                else:
-                    trades = build_trades_payload()
-                trades = _window_trades_payload(trades, _DASHBOARD_STATE_TRADE_LIMIT, 0)
+                trades = build_trades_payload()
+                limit = _HISTORICAL_TRADE_PAGE_SIZE if _scanner_is_historical() else _DASHBOARD_STATE_TRADE_LIMIT
+                trades = _window_trades_payload(trades, limit, 0)
                 trade_hash = hashlib.blake2b(
                     json.dumps(make_serializable(trades), sort_keys=True, default=str).encode("utf-8"),
                     digest_size=12,

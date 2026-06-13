@@ -140,8 +140,8 @@ class Scanner:
         self.risk_opt_pct = settings.risk_opt_pct
         self.futures_sl_pct = settings.futures_sl_pct
         self.options_sl_pct = settings.options_sl_pct
-        # Every restart begins with the latest session only. A larger window is
-        # loaded only after the user explicitly changes the running setting.
+        # Keep startup light: historical mode hydrates only the latest session
+        # until the user expands the window from the dashboard/settings.
         self.backtest_days = 1
         self.auto_mode = False
         self.inst_pref = getattr(settings, "inst_pref", "AUTO")
@@ -665,8 +665,8 @@ class Scanner:
             "strike_selection": getattr(get_settings(), "option_strike_selection", "BOTH"),
             "sl_mode": getattr(get_settings(), "sl_mode", "NATURAL"),
             "grade_preference": getattr(get_settings(), "signal_grade_preference", "auto"),
-            "ut_regime_adaptation": getattr(get_settings(), "ut_regime_adaptation", False),
-            "ut_concurrency_guard": getattr(get_settings(), "ut_concurrency_guard", True),
+            "ut_regime_adaptation": self._setting_enabled(getattr(get_settings(), "ut_regime_adaptation", False), False),
+            "ut_concurrency_guard": self._setting_enabled(getattr(get_settings(), "ut_concurrency_guard", True), True),
             "ut_no_entry_after": getattr(get_settings(), "ut_no_entry_after", "15:00"),
             "ut_5min_no_entry_after": getattr(get_settings(), "ut_5min_no_entry_after", "15:15"),
             "ut_force_exit_time": getattr(get_settings(), "ut_force_exit_time", "15:25"),
@@ -674,7 +674,7 @@ class Scanner:
             "intelligence_cache_ttl_seconds": getattr(get_settings(), "intelligence_cache_ttl_seconds", 30.0),
             "history_cache_ttl_seconds": getattr(get_settings(), "history_cache_ttl_seconds", 60.0),
             "ut_option_history_mode": getattr(get_settings(), "ut_option_history_mode", "fetch_or_synthetic"),
-            "ut_backtest_more_results": getattr(get_settings(), "ut_backtest_more_results", True),
+            "ut_backtest_more_results": self._setting_enabled(getattr(get_settings(), "ut_backtest_more_results", True), True),
             "ut_timeframe_entry_policy": getattr(get_settings(), "ut_timeframe_entry_policy", "PRIMARY_15"),
             "ut_5min_option_min_confidence": getattr(get_settings(), "ut_5min_option_min_confidence", 0.70),
             "ut_5min_loss_cooldown_minutes": getattr(get_settings(), "ut_5min_loss_cooldown_minutes", 45),
@@ -691,7 +691,7 @@ class Scanner:
             "index_cooldown_minutes": getattr(
                 self, "index_cooldown_minutes", getattr(get_settings(), "index_cooldown_minutes", 4.0)
             ),
-            "chart_stream_enabled": bool(getattr(self, "chart_stream_enabled", True)),
+            "chart_stream_enabled": self._setting_enabled(getattr(self, "chart_stream_enabled", True), True),
             "ut_preset": getattr(get_settings(), "ut_preset", "AGGRESSIVE")
         }
 
@@ -912,6 +912,21 @@ class Scanner:
         )
 
     @staticmethod
+    def _setting_enabled(value, default: bool = True) -> bool:
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return default
+        if isinstance(value, (int, float)):
+            return value != 0
+        text = str(value).strip().lower()
+        if text in {"1", "true", "yes", "y", "on"}:
+            return True
+        if text in {"0", "false", "no", "n", "off", ""}:
+            return False
+        return bool(value)
+
+    @staticmethod
     def _normalize_signal_grade_preference(value) -> str:
         """Keep UI/API/env grade settings on one canonical vocabulary."""
         raw = str(value or "auto").strip().upper().replace(" ", "")
@@ -955,7 +970,7 @@ class Scanner:
 
         if concurrency_guard is not None:
             old_val = getattr(settings, "ut_concurrency_guard", True)
-            new_val = bool(concurrency_guard)
+            new_val = self._setting_enabled(concurrency_guard, True)
             if old_val != new_val:
                 settings.ut_concurrency_guard = new_val
                 needs_full_refresh = True
@@ -1040,6 +1055,7 @@ class Scanner:
             needs_full_refresh = True
             logger.info(f"ðŸ”„ Backtest window changed to: {self.backtest_days} days")
             self.simulation_id = int(time.time()) # Update sim ID to force full broadcast
+            self._stamp_simulation_diagnostics()
             self._hist_candidates_loaded = False  # Force reload of session candidates
 
         if capital_fut is not None and float(capital_fut) != self.capital_fut:
@@ -1170,6 +1186,7 @@ class Scanner:
                 delattr(self, "_cached_hist_closed_count")
 
             self.simulation_id = int(time.time())
+            self._stamp_simulation_diagnostics()
 
             if hasattr(self.mtf, "_result_cache"):
                 self.mtf._result_cache.clear()
@@ -1222,6 +1239,7 @@ class Scanner:
                 delattr(self, "_cached_hist_closed_count")
 
             self.simulation_id = int(time.time())
+            self._stamp_simulation_diagnostics()
 
             if hasattr(self.mtf, "_result_cache"):
                 self.mtf._result_cache.clear()
@@ -1317,6 +1335,18 @@ class Scanner:
                 "started_at": datetime.now(IST).isoformat(),
             },
         }
+
+    def _stamp_simulation_diagnostics(self) -> None:
+        diagnostics = getattr(self, "_diagnostics", None)
+        if not isinstance(diagnostics, dict):
+            return
+        simulation = dict(diagnostics.get("simulation") or {})
+        simulation.update({
+            "id": int(getattr(self, "simulation_id", 0) or 0),
+            "backtest_days": int(getattr(self, "backtest_days", 0) or 0),
+        })
+        simulation.setdefault("started_at", datetime.now(IST).isoformat())
+        diagnostics["simulation"] = simulation
 
     def _get_system_metrics_payload(self) -> Dict[str, Any]:
         """Return cached local hardware/process metrics for the UT1 state panel."""
@@ -1970,6 +2000,7 @@ class Scanner:
             self._last_signal_time.clear() # Clear here ONLY after data is ready
             self._last_signal_identity.clear()
             self.simulation_id = int(time.time())
+            self._stamp_simulation_diagnostics()
             # The next _scan_cycle will now pick up the new days_back and empty last_signal_time
             logger.info("ðŸ§¹ System state RESET with FORCED history fetch.")
             elapsed = time.monotonic() - started_at
@@ -3157,10 +3188,17 @@ class Scanner:
 
                             processing_future.add_done_callback(_clear_live_future)
 
-                        ui_data, candidate = await asyncio.wait_for(
-                            asyncio.shield(processing_future),
-                            timeout=timeout_seconds,
-                        )
+                        if self.mode == "HISTORICAL":
+                            # Historical replays must be deterministic. If an
+                            # executor future is timed out, the thread keeps
+                            # running and can still append historical trades
+                            # after the dashboard has published a "final" count.
+                            ui_data, candidate = await asyncio.shield(processing_future)
+                        else:
+                            ui_data, candidate = await asyncio.wait_for(
+                                asyncio.shield(processing_future),
+                                timeout=timeout_seconds,
+                            )
                         if self.mode != "HISTORICAL" and not cycle_is_warmup:
                             self._clear_live_inflight_skip(name)
                         return name, (ui_data, candidate)
@@ -5765,8 +5803,29 @@ class Scanner:
             backtest_days=self.backtest_days,
             inst_pref=getattr(self, "inst_pref", "AUTO"),
         )
+        recalc_status = str(
+            (getattr(self, "_recalculation_status", {}) or {}).get("status", "idle")
+            or "idle"
+        )
+        historical_complete = (
+            self.mode != "HISTORICAL"
+            or (
+                int(getattr(self, "scan_count", 0) or 0) > 0
+                and not bool(getattr(self, "_calculation_lock", False))
+                and not bool(getattr(self, "is_calculating", False))
+                and recalc_status not in {"worker_running", "applying", "running"}
+            )
+        )
         payload["meta"] = {
             "mode": self.mode,
+            "backtest_days": int(getattr(self, "backtest_days", 1) or 1),
+            "simulation_id": int(getattr(self, "simulation_id", 0) or 0),
+            "complete": bool(historical_complete),
+            "recalculation_status": recalc_status,
+            "inst_pref": str(getattr(self, "inst_pref", "AUTO") or "AUTO").upper(),
+            "ut_concurrency_guard": self._setting_enabled(getattr(get_settings(), "ut_concurrency_guard", True), True),
+            "grade_preference": str(getattr(get_settings(), "signal_grade_preference", "auto") or "auto"),
+            "timeframe_entry_policy": str(getattr(get_settings(), "ut_timeframe_entry_policy", "PRIMARY_15") or "PRIMARY_15").upper(),
             "open_rows": len(payload.get("open", []) or []),
             "closed_rows": len(payload.get("closed", []) or []),
             "restored_signal_rows": 0,
@@ -6641,7 +6700,7 @@ class Scanner:
     def _market_location_entry_gate(self, candidate: TradeCandidate) -> Tuple[bool, str]:
         """Classify live entries that are badly located inside the intraday structure."""
         settings = get_settings()
-        if not bool(getattr(settings, "ut_market_location_gate", True)):
+        if not self._setting_enabled(getattr(settings, "ut_market_location_gate", True), True):
             return True, ""
         if getattr(self, "mode", "") == "HISTORICAL":
             return True, ""
@@ -6778,7 +6837,7 @@ class Scanner:
             return True, "15min trend agreement override"
 
         current_regime = str(self.latest_regimes.get(candidate.instrument, "UNKNOWN") or "UNKNOWN").upper()
-        regime_adaptation = bool(getattr(settings, "ut_regime_adaptation", True))
+        regime_adaptation = self._setting_enabled(getattr(settings, "ut_regime_adaptation", True), True)
         is_choppy = regime_adaptation and current_regime in {
             "CHOPPY",
             "SIDEWAYS",
@@ -6817,7 +6876,7 @@ class Scanner:
         momentum_threshold = float(getattr(settings, "momentum_override_threshold", 25.0) or 25.0)
         momentum_override = float(adx_val or 0.0) >= momentum_threshold
         choppy_regimes = {"CHOPPY", "SIDEWAYS", "MEAN_REVERTING", "RANGING", "VOLATILE", "UNKNOWN"}
-        regime_adaptation = bool(getattr(settings, "ut_regime_adaptation", True))
+        regime_adaptation = self._setting_enabled(getattr(settings, "ut_regime_adaptation", True), True)
         is_choppy = regime_adaptation and (regime in choppy_regimes) and not momentum_override
         if momentum_override and regime_adaptation and (regime in choppy_regimes):
             logger.info(f"🚀 [OVERRIDE] Live Choppy regime bypassed due to strong ADX ({adx_val:.1f} >= {momentum_threshold})")
@@ -7690,7 +7749,7 @@ class Scanner:
 
     def _prepare_candidate_for_concurrency(self, candidate: TradeCandidate) -> bool:
         """Hard guard: one index can only add a cross-TF trade as the opposite instrument type."""
-        if not getattr(get_settings(), "ut_concurrency_guard", True):
+        if not self._setting_enabled(getattr(get_settings(), "ut_concurrency_guard", True), True):
             return True
 
         base_inst = candidate.instrument.split()[0]
@@ -8011,7 +8070,7 @@ class Scanner:
         except Exception:
             option_quality_ok = grade in {"A", "A+"} and conf >= 0.70
         more_results = (
-            getattr(get_settings(), "ut_backtest_more_results", True)
+            self._setting_enabled(getattr(get_settings(), "ut_backtest_more_results", True), True)
             and getattr(self, "mode", "") == "HISTORICAL"
         )
 
@@ -8177,7 +8236,15 @@ class Scanner:
                             sig_rank = grade_hierarchy.get(base_grade, 0)
 
                             grade_pref = self._normalize_signal_grade_preference(getattr(settings, "signal_grade_preference", "auto"))
-                            is_choppy = hist_regime in {"CHOPPY", "SIDEWAYS", "MEAN_REVERTING", "RANGING", "VOLATILE", "UNKNOWN"}
+                            raw_choppy_regime = hist_regime in {"CHOPPY", "SIDEWAYS", "MEAN_REVERTING", "RANGING", "VOLATILE", "UNKNOWN"}
+                            regime_adaptation = self._setting_enabled(getattr(settings, "ut_regime_adaptation", True), True)
+                            adx_value = float(getattr(s1, "adx_value", 0.0) or 0.0)
+                            momentum_threshold = float(getattr(settings, "momentum_override_threshold", 25.0) or 25.0)
+                            explosive_move = (
+                                adx_value >= momentum_threshold
+                                or abs(normalize_intelligence_score(hist_intel_score)) >= 0.70
+                            )
+                            is_choppy = regime_adaptation and raw_choppy_regime and not explosive_move
                             direction = "LONG" if s1.signal_type == "BUY" else "SHORT"
 
                             # -- Aligned Quality Gates (mirror _passes_live_trade_ready_gate) --
@@ -8188,7 +8255,7 @@ class Scanner:
                                 min_conf_5m = float(getattr(settings, "ut_5min_option_min_confidence", 0.70) or 0.70)
                                 trend_15m_agrees = self._historical_15m_trend_agrees(mtf_result, s1.timestamp, direction)
                                 grade_conf_ok = sig_rank >= 3 and hist_conf >= min_conf_5m
-                                if not (grade_conf_ok or trend_15m_agrees):
+                                if not (grade_conf_ok or trend_15m_agrees or explosive_move):
                                     self._record_historical_reject(
                                         s1,
                                         instrument,
@@ -8915,7 +8982,7 @@ class Scanner:
 
                 # Dynamic Regime-Aware minimum grade preference
                 current_regime = self.latest_regimes.get(sig.instrument, "UNKNOWN")
-                regime_adaptation = bool(getattr(settings, "ut_regime_adaptation", True))
+                regime_adaptation = self._setting_enabled(getattr(settings, "ut_regime_adaptation", True), True)
                 is_choppy = regime_adaptation and current_regime in {"CHOPPY", "SIDEWAYS", "MEAN_REVERTING", "RANGING", "VOLATILE", "UNKNOWN"}
 
                 if grade_pref == "B":
