@@ -1,0 +1,62 @@
+{
+  "indices": {
+    "NIFTY": {
+      "symbol": "NIFTY",
+      "token": "99926000",
+      "exchange": "NSE",
+      "lot_size": 65,
+      "strike_interval": 50,
+      "option_exchange": "NFO",
+      "option_symbol_prefix": "NIFTY",
+      "tick_size": 0.05,
+      "freeze_qty": 1800
+    },
+    "BANKNIFTY": {
+      "symbol": "BANKNIFTY",
+      "token": "99926009",
+      "exchange": "NSE",
+      "lot_size": 30,
+      "strike_interval": 100,
+      "option_exchange": "NFO",
+      "option_symbol_prefix": "BANKNIFTY",
+      "tick_size": 0.05,
+      "freeze_qty": 900
+    },
+    "SENSEX": {
+      "symbol": "SENSEX",
+      "token": "99919000",
+      "exchange": "BSE",
+      "lot_size": 20,
+      "strike_interval": 100,
+      "option_exchange": "BFO",
+      "option_symbol_prefix": "SENSEX",
+      "tick_size": 0.05,
+      "freeze_qty": 500
+    },
+    "MIDCPNIFTY": {
+      "symbol": "MIDCPNIFTY",
+      "token": "99926074",
+      "exchange": "NSE",
+      "lot_size": 120,
+      "strike_interval": 25,
+      "option_exchange": "NFO",
+      "option_symbol_prefix": "MIDCPNIFTY",
+      "tick_size": 0.05,
+      "freeze_qty": 2801
+    }
+  },
+  "vix": {
+    "symbol": "INDIAVIX",
+    "token": "99926017",
+    "exchange": "NSE"
+  },
+  "timeframes": ["1min", "5min", "15min"],
+  "signal_timeframes": ["5min", "15min"],
+  "tracking_timeframe": "1min",
+  "session": {
+    "start": "09:20",
+    "end": "15:29",
+    "market_open": "09:15",
+    "market_close": "15:30"
+  }
+}

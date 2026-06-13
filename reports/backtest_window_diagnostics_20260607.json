@@ -1,0 +1,276 @@
+﻿[
+    {
+        "days":  1,
+        "simulation_id":  1780779446,
+        "diagnostic_days":  1,
+        "is_calculating":  true,
+        "scan_count":  15,
+        "closed_rows":  1,
+        "summary":  {
+                        "daily_pnl":  -856.0,
+                        "fut_pnl":  0,
+                        "opt_pnl":  -856.0,
+                        "total_trades":  1,
+                        "open_count":  0,
+                        "wins":  0,
+                        "losses":  1,
+                        "win_rate":  0.0,
+                        "profit_factor":  0.0,
+                        "sharpe_ratio":  0.0,
+                        "max_drawdown":  855.73
+                    },
+        "row_pnl":  -855.73,
+        "by_type":  {
+                        "OPT":  {
+                                    "count":  1,
+                                    "pnl":  -855.73,
+                                    "wins":  0,
+                                    "losses":  1,
+                                    "win_rate":  0.0
+                                }
+                    },
+        "rejects":  {
+                        "Choppy market blocked":  20,
+                        "Quality gate blocked":  16,
+                        "C grade blocked":  5
+                    },
+        "instrument_selection":  {
+                                     "OPT":  17,
+                                     "FUT":  25
+                                 },
+        "option_history":  {
+                               "attempts":  1,
+                               "hits":  0,
+                               "misses":  6,
+                               "synthetic":  0,
+                               "fallback_to_fut":  0
+                           },
+        "sources":  {
+                        "angel":  true,
+                        "angel_tick_age_seconds":  97.49,
+                        "fyers":  true,
+                        "fyers_tick_age_seconds":  96.75,
+                        "broker_degraded":  false,
+                        "all_brokers_unavailable":  false,
+                        "fyers_auth_required":  false,
+                        "fyers_auth_reason":  "",
+                        "fyers_refresh_disabled":  false,
+                        "yahoo":  true,
+                        "yahoo_mode":  "idle_standby",
+                        "yahoo_request_count":  0,
+                        "yahoo_last_used_at":  null
+                    }
+    },
+    {
+        "days":  14,
+        "simulation_id":  1780779386,
+        "diagnostic_days":  14,
+        "is_calculating":  true,
+        "scan_count":  15,
+        "closed_rows":  81,
+        "summary":  {
+                        "daily_pnl":  72292.0,
+                        "fut_pnl":  12789.0,
+                        "opt_pnl":  59503.0,
+                        "total_trades":  81,
+                        "open_count":  0,
+                        "wins":  52,
+                        "losses":  29,
+                        "win_rate":  64.19753086419753,
+                        "profit_factor":  2.66370916053636,
+                        "sharpe_ratio":  4.963678004716164,
+                        "max_drawdown":  8565.59
+                    },
+        "row_pnl":  72291.74,
+        "by_type":  {
+                        "OPT":  {
+                                    "count":  67,
+                                    "pnl":  59502.64,
+                                    "wins":  47,
+                                    "losses":  20,
+                                    "win_rate":  70.15
+                                },
+                        "FUT":  {
+                                    "count":  14,
+                                    "pnl":  12789.1,
+                                    "wins":  5,
+                                    "losses":  9,
+                                    "win_rate":  35.71
+                                }
+                    },
+        "rejects":  {
+                        "Choppy market blocked":  183,
+                        "Quality gate blocked":  171,
+                        "C grade blocked":  37,
+                        "Confidence below 50%":  28
+                    },
+        "instrument_selection":  {
+                                     "OPT":  211,
+                                     "FUT":  283
+                                 },
+        "option_history":  {
+                               "attempts":  23,
+                               "hits":  63,
+                               "misses":  24,
+                               "synthetic":  0,
+                               "fallback_to_fut":  0
+                           },
+        "sources":  {
+                        "angel":  true,
+                        "angel_tick_age_seconds":  43.03,
+                        "fyers":  true,
+                        "fyers_tick_age_seconds":  42.29,
+                        "broker_degraded":  false,
+                        "all_brokers_unavailable":  false,
+                        "fyers_auth_required":  false,
+                        "fyers_auth_reason":  "",
+                        "fyers_refresh_disabled":  false,
+                        "yahoo":  true,
+                        "yahoo_mode":  "idle_standby",
+                        "yahoo_request_count":  0,
+                        "yahoo_last_used_at":  null
+                    }
+    },
+    {
+        "days":  22,
+        "simulation_id":  1780779491,
+        "diagnostic_days":  22,
+        "is_calculating":  true,
+        "scan_count":  11,
+        "closed_rows":  157,
+        "summary":  {
+                        "daily_pnl":  202317.0,
+                        "fut_pnl":  87665.0,
+                        "opt_pnl":  114652.0,
+                        "total_trades":  157,
+                        "open_count":  0,
+                        "wins":  92,
+                        "losses":  65,
+                        "win_rate":  58.59872611464968,
+                        "profit_factor":  2.796590696574943,
+                        "sharpe_ratio":  4.864992388648964,
+                        "max_drawdown":  17045.51999999999
+                    },
+        "row_pnl":  202317.42,
+        "by_type":  {
+                        "OPT":  {
+                                    "count":  120,
+                                    "pnl":  114652.37,
+                                    "wins":  75,
+                                    "losses":  45,
+                                    "win_rate":  62.5
+                                },
+                        "FUT":  {
+                                    "count":  37,
+                                    "pnl":  87665.05,
+                                    "wins":  17,
+                                    "losses":  20,
+                                    "win_rate":  45.95
+                                }
+                    },
+        "rejects":  {
+                        "Choppy market blocked":  336,
+                        "Quality gate blocked":  311,
+                        "C grade blocked":  79,
+                        "Confidence below 50%":  53,
+                        "After no-entry gate 15:01":  2
+                    },
+        "instrument_selection":  {
+                                     "OPT":  413,
+                                     "FUT":  531
+                                 },
+        "option_history":  {
+                               "attempts":  41,
+                               "hits":  118,
+                               "misses":  74,
+                               "synthetic":  0,
+                               "fallback_to_fut":  0
+                           },
+        "sources":  {
+                        "angel":  true,
+                        "angel_tick_age_seconds":  174.37,
+                        "fyers":  true,
+                        "fyers_tick_age_seconds":  173.63,
+                        "broker_degraded":  false,
+                        "all_brokers_unavailable":  false,
+                        "fyers_auth_required":  false,
+                        "fyers_auth_reason":  "",
+                        "fyers_refresh_disabled":  false,
+                        "yahoo":  true,
+                        "yahoo_mode":  "idle_standby",
+                        "yahoo_request_count":  0,
+                        "yahoo_last_used_at":  null
+                    }
+    },
+    {
+        "days":  30,
+        "simulation_id":  1780779569,
+        "diagnostic_days":  30,
+        "is_calculating":  true,
+        "scan_count":  8,
+        "closed_rows":  167,
+        "summary":  {
+                        "daily_pnl":  202434.0,
+                        "fut_pnl":  94163.0,
+                        "opt_pnl":  108270.0,
+                        "total_trades":  167,
+                        "open_count":  0,
+                        "wins":  94,
+                        "losses":  73,
+                        "win_rate":  56.287425149700596,
+                        "profit_factor":  2.586618312101075,
+                        "sharpe_ratio":  4.524631999866942,
+                        "max_drawdown":  18439.589999999997
+                    },
+        "row_pnl":  202433.6,
+        "by_type":  {
+                        "OPT":  {
+                                    "count":  125,
+                                    "pnl":  108270.2,
+                                    "wins":  76,
+                                    "losses":  49,
+                                    "win_rate":  60.8
+                                },
+                        "FUT":  {
+                                    "count":  42,
+                                    "pnl":  94163.4,
+                                    "wins":  18,
+                                    "losses":  24,
+                                    "win_rate":  42.86
+                                }
+                    },
+        "rejects":  {
+                        "Choppy market blocked":  342,
+                        "Quality gate blocked":  322,
+                        "C grade blocked":  84,
+                        "Confidence below 50%":  55,
+                        "After no-entry gate 15:01":  2
+                    },
+        "instrument_selection":  {
+                                     "OPT":  430,
+                                     "FUT":  548
+                                 },
+        "option_history":  {
+                               "attempts":  9,
+                               "hits":  118,
+                               "misses":  81,
+                               "synthetic":  0,
+                               "fallback_to_fut":  0
+                           },
+        "sources":  {
+                        "angel":  true,
+                        "angel_tick_age_seconds":  240.62,
+                        "fyers":  true,
+                        "fyers_tick_age_seconds":  239.88,
+                        "broker_degraded":  false,
+                        "all_brokers_unavailable":  false,
+                        "fyers_auth_required":  false,
+                        "fyers_auth_reason":  "",
+                        "fyers_refresh_disabled":  false,
+                        "yahoo":  true,
+                        "yahoo_mode":  "idle_standby",
+                        "yahoo_request_count":  0,
+                        "yahoo_last_used_at":  null
+                    }
+    }
+]

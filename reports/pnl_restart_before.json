@@ -1,0 +1,1017 @@
+{
+  "rows": {
+    "H_BANKNIFTY_15min_20260514150000": {
+      "direction": "SHORT",
+      "entry_price": 1410.0,
+      "exit_price": 1443.6,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 928.0
+    },
+    "H_BANKNIFTY_15min_20260518114500": {
+      "direction": "SHORT",
+      "entry_price": 1379.95,
+      "exit_price": 1421.65,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 1171.0
+    },
+    "H_BANKNIFTY_15min_20260521110000": {
+      "direction": "SHORT",
+      "entry_price": 1274.4,
+      "exit_price": 1442.4,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 4960.0
+    },
+    "H_BANKNIFTY_15min_20260522141500": {
+      "direction": "SHORT",
+      "entry_price": 1185.0,
+      "exit_price": 1230.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 1270.0
+    },
+    "H_BANKNIFTY_15min_20260525121500": {
+      "direction": "SHORT",
+      "entry_price": 54982.0,
+      "exit_price": 55087.61,
+      "exit_reason": "SL HIT",
+      "inst_type": "FUT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -3368.3
+    },
+    "H_BANKNIFTY_15min_20260525143000": {
+      "direction": "LONG",
+      "entry_price": 1373.95,
+      "exit_price": 1443.37,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 2002.6
+    },
+    "H_BANKNIFTY_15min_20260526111500": {
+      "direction": "SHORT",
+      "entry_price": 1057.0,
+      "exit_price": 1153.78,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 2823.4
+    },
+    "H_BANKNIFTY_15min_20260604094500": {
+      "direction": "LONG",
+      "entry_price": 650.8062,
+      "exit_price": 553.19,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -3008.49
+    },
+    "H_BANKNIFTY_15min_20260605123000": {
+      "direction": "SHORT",
+      "entry_price": 653.4738,
+      "exit_price": 626.9494833999993,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -875.73
+    },
+    "H_BANKNIFTY_5min_20260515122000": {
+      "direction": "SHORT",
+      "entry_price": 1405.75,
+      "exit_price": 1390.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -552.5
+    },
+    "H_BANKNIFTY_5min_20260515123500": {
+      "direction": "LONG",
+      "entry_price": 1740.0,
+      "exit_price": 1823.72,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 2431.6
+    },
+    "H_BANKNIFTY_5min_20260518121000_FUT": {
+      "direction": "LONG",
+      "entry_price": 53111.45,
+      "exit_price": 53421.7,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 9107.5
+    },
+    "H_BANKNIFTY_5min_20260518133000": {
+      "direction": "LONG",
+      "entry_price": 1805.5,
+      "exit_price": 1789.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -575.0
+    },
+    "H_BANKNIFTY_5min_20260519092000": {
+      "direction": "LONG",
+      "entry_price": 1740.0,
+      "exit_price": 1747.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 133.0
+    },
+    "H_BANKNIFTY_5min_20260519094000": {
+      "direction": "LONG",
+      "entry_price": 1743.3,
+      "exit_price": 1777.3,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 940.0
+    },
+    "H_BANKNIFTY_5min_20260520122000": {
+      "direction": "LONG",
+      "entry_price": 1681.4,
+      "exit_price": 1684.9,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 25.0
+    },
+    "H_BANKNIFTY_5min_20260520124500": {
+      "direction": "SHORT",
+      "entry_price": 1331.0,
+      "exit_price": 1408.63,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 2248.9
+    },
+    "H_BANKNIFTY_5min_20260521114500_FUT": {
+      "direction": "SHORT",
+      "entry_price": 53665.0,
+      "exit_price": 53304.65,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 10610.5
+    },
+    "H_BANKNIFTY_5min_20260521135000": {
+      "direction": "SHORT",
+      "entry_price": 1297.05,
+      "exit_price": 1299.5,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -6.5
+    },
+    "H_BANKNIFTY_5min_20260521142000": {
+      "direction": "LONG",
+      "entry_price": 1600.3,
+      "exit_price": 1653.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 1504.0
+    },
+    "H_BANKNIFTY_5min_20260522112000": {
+      "direction": "LONG",
+      "entry_price": 1523.95,
+      "exit_price": 1562.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 1061.5
+    },
+    "H_BANKNIFTY_5min_20260522112500": {
+      "direction": "SHORT",
+      "entry_price": 1203.95,
+      "exit_price": 1217.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 311.5
+    },
+    "H_BANKNIFTY_5min_20260522124000": {
+      "direction": "LONG",
+      "entry_price": 1547.0,
+      "exit_price": 1611.42,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 1852.6
+    },
+    "H_BANKNIFTY_5min_20260526101000": {
+      "direction": "LONG",
+      "entry_price": 1411.0,
+      "exit_price": 1369.63,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -1321.1
+    },
+    "H_BANKNIFTY_5min_20260602104500": {
+      "direction": "SHORT",
+      "entry_price": 639.438,
+      "exit_price": 585.56,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": -1696.34
+    },
+    "H_BANKNIFTY_5min_20260603131500": {
+      "direction": "LONG",
+      "entry_price": 644.0394,
+      "exit_price": 852.3494739500029,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 30,
+      "lots": 1,
+      "pnl": 6169.3
+    },
+    "H_MIDCPNIFTY_15min_20260601144500": {
+      "direction": "SHORT",
+      "entry_price": 257.9,
+      "exit_price": 291.23,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 3919.6
+    },
+    "H_MIDCPNIFTY_15min_20260603123000": {
+      "direction": "LONG",
+      "entry_price": 338.7,
+      "exit_price": 379.41,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 4805.2
+    },
+    "H_MIDCPNIFTY_5min_20260515110000": {
+      "direction": "SHORT",
+      "entry_price": 171.0402,
+      "exit_price": 192.70241922499983,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 2519.47
+    },
+    "H_MIDCPNIFTY_5min_20260515122000": {
+      "direction": "SHORT",
+      "entry_price": 170.3658,
+      "exit_price": 160.12,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -1309.5
+    },
+    "H_MIDCPNIFTY_5min_20260518102500": {
+      "direction": "SHORT",
+      "entry_price": 167.4264,
+      "exit_price": 152.01,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -1929.97
+    },
+    "H_MIDCPNIFTY_5min_20260521121000": {
+      "direction": "SHORT",
+      "entry_price": 172.8264,
+      "exit_price": 196.87368120000073,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 2805.67
+    },
+    "H_MIDCPNIFTY_5min_20260522144000": {
+      "direction": "SHORT",
+      "entry_price": 172.3098,
+      "exit_price": 165.29,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -922.38
+    },
+    "H_MIDCPNIFTY_5min_20260525133500": {
+      "direction": "SHORT",
+      "entry_price": 174.279,
+      "exit_price": 174.21736074999964,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -87.4
+    },
+    "H_MIDCPNIFTY_5min_20260526141500": {
+      "direction": "LONG",
+      "entry_price": 383.0,
+      "exit_price": 377.16,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -780.8
+    },
+    "H_MIDCPNIFTY_5min_20260527122500": {
+      "direction": "SHORT",
+      "entry_price": 267.45,
+      "exit_price": 281.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 1546.0
+    },
+    "H_MIDCPNIFTY_5min_20260601092000": {
+      "direction": "SHORT",
+      "entry_price": 278.6,
+      "exit_price": 323.1,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 5260.0
+    },
+    "H_MIDCPNIFTY_5min_20260601145000_FUT": {
+      "direction": "SHORT",
+      "entry_price": 14291.6,
+      "exit_price": 14156.25,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 16042.0
+    },
+    "H_MIDCPNIFTY_5min_20260602101000": {
+      "direction": "SHORT",
+      "entry_price": 255.9,
+      "exit_price": 256.45,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -14.0
+    },
+    "H_MIDCPNIFTY_5min_20260602104500": {
+      "direction": "SHORT",
+      "entry_price": 169.8582,
+      "exit_price": 166.54383809999985,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -477.72
+    },
+    "H_MIDCPNIFTY_5min_20260603095000": {
+      "direction": "SHORT",
+      "entry_price": 168.8382,
+      "exit_price": 151.07,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": -2212.18
+    },
+    "H_MIDCPNIFTY_5min_20260603132000": {
+      "direction": "LONG",
+      "entry_price": 372.65,
+      "exit_price": 397.24,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 120,
+      "lots": 1,
+      "pnl": 2870.8
+    },
+    "H_NIFTY_15min_20260515110000": {
+      "direction": "SHORT",
+      "entry_price": 390.0,
+      "exit_price": 434.06,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2783.9
+    },
+    "H_NIFTY_15min_20260518103000": {
+      "direction": "LONG",
+      "entry_price": 506.4,
+      "exit_price": 536.8,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1896.0
+    },
+    "H_NIFTY_15min_20260519100000": {
+      "direction": "LONG",
+      "entry_price": 23753.45,
+      "exit_price": 23708.35,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -3131.5
+    },
+    "H_NIFTY_15min_20260519130000": {
+      "direction": "SHORT",
+      "entry_price": 379.8,
+      "exit_price": 415.37,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2232.05
+    },
+    "H_NIFTY_15min_20260520094500": {
+      "direction": "LONG",
+      "entry_price": 23541.9,
+      "exit_price": 23567.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1438.0
+    },
+    "H_NIFTY_15min_20260527094500": {
+      "direction": "SHORT",
+      "entry_price": 238.7,
+      "exit_price": 242.55,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 170.25
+    },
+    "H_NIFTY_15min_20260527100000": {
+      "direction": "LONG",
+      "entry_price": 254.65,
+      "exit_price": 289.74,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2200.85
+    },
+    "H_NIFTY_15min_20260529093000": {
+      "direction": "SHORT",
+      "entry_price": 23875.75,
+      "exit_price": 23918.0,
+      "exit_reason": "SL HIT",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -2946.25
+    },
+    "H_NIFTY_15min_20260529100000": {
+      "direction": "LONG",
+      "entry_price": 23945.7,
+      "exit_price": 23900.85,
+      "exit_reason": "SL HIT",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -3115.25
+    },
+    "H_NIFTY_15min_20260529103000": {
+      "direction": "SHORT",
+      "entry_price": 23900.65,
+      "exit_price": 23786.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 7245.75
+    },
+    "H_NIFTY_15min_20260529143000": {
+      "direction": "LONG",
+      "entry_price": 23786.1,
+      "exit_price": 23750.01,
+      "exit_reason": "SL HIT",
+      "inst_type": "FUT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -2545.85
+    },
+    "H_NIFTY_15min_20260601110000": {
+      "direction": "LONG",
+      "entry_price": 274.5,
+      "exit_price": 250.9,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -1614.0
+    },
+    "H_NIFTY_15min_20260601114500": {
+      "direction": "SHORT",
+      "entry_price": 193.95,
+      "exit_price": 240.9,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2971.75
+    },
+    "H_NIFTY_15min_20260602123000": {
+      "direction": "LONG",
+      "entry_price": 218.85,
+      "exit_price": 264.29,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2873.6
+    },
+    "H_NIFTY_5min_20260515122000": {
+      "direction": "SHORT",
+      "entry_price": 432.05,
+      "exit_price": 440.6,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 475.75
+    },
+    "H_NIFTY_5min_20260515124000": {
+      "direction": "LONG",
+      "entry_price": 490.55,
+      "exit_price": 503.9,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 787.75
+    },
+    "H_NIFTY_5min_20260520104500": {
+      "direction": "SHORT",
+      "entry_price": 386.0,
+      "exit_price": 397.75,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 683.75
+    },
+    "H_NIFTY_5min_20260520105000": {
+      "direction": "LONG",
+      "entry_price": 428.2,
+      "exit_price": 469.01,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 2572.65
+    },
+    "H_NIFTY_5min_20260521094000": {
+      "direction": "LONG",
+      "entry_price": 394.7,
+      "exit_price": 407.65,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 761.75
+    },
+    "H_NIFTY_5min_20260521135000": {
+      "direction": "SHORT",
+      "entry_price": 371.05,
+      "exit_price": 358.81,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -875.6
+    },
+    "H_NIFTY_5min_20260521142000": {
+      "direction": "LONG",
+      "entry_price": 403.0,
+      "exit_price": 403.95,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -18.25
+    },
+    "H_NIFTY_5min_20260522124000": {
+      "direction": "LONG",
+      "entry_price": 372.15,
+      "exit_price": 393.18,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1286.95
+    },
+    "H_NIFTY_5min_20260525120000": {
+      "direction": "SHORT",
+      "entry_price": 287.55,
+      "exit_price": 306.09,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1125.1
+    },
+    "H_NIFTY_5min_20260527105000": {
+      "direction": "LONG",
+      "entry_price": 293.0,
+      "exit_price": 301.8,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 492.0
+    },
+    "H_NIFTY_5min_20260601095500": {
+      "direction": "SHORT",
+      "entry_price": 202.55,
+      "exit_price": 215.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 729.25
+    },
+    "H_NIFTY_5min_20260602101000": {
+      "direction": "SHORT",
+      "entry_price": 191.05,
+      "exit_price": 180.75,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": -749.5
+    },
+    "H_NIFTY_5min_20260602113500": {
+      "direction": "SHORT",
+      "entry_price": 171.6,
+      "exit_price": 193.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1317.5
+    },
+    "H_NIFTY_5min_20260603132000": {
+      "direction": "LONG",
+      "entry_price": 280.05719999999997,
+      "exit_price": 303.92183535000146,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 65,
+      "lots": 1,
+      "pnl": 1471.2
+    },
+    "H_SENSEX_15min_20260513124500": {
+      "direction": "LONG",
+      "entry_price": 902.1304799999999,
+      "exit_price": 787.51,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -2372.41
+    },
+    "H_SENSEX_15min_20260518103000": {
+      "direction": "LONG",
+      "entry_price": 894.4227599999999,
+      "exit_price": 1295.2655915550026,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 7936.86
+    },
+    "H_SENSEX_15min_20260519094500": {
+      "direction": "SHORT",
+      "entry_price": 75444.47,
+      "exit_price": 75595.36,
+      "exit_reason": "SL HIT",
+      "inst_type": "FUT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -3217.8
+    },
+    "H_SENSEX_15min_20260519100000": {
+      "direction": "LONG",
+      "entry_price": 908.21436,
+      "exit_price": 800.37,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -2236.89
+    },
+    "H_SENSEX_15min_20260519133000": {
+      "direction": "SHORT",
+      "entry_price": 905.6057999999999,
+      "exit_price": 1095.328276649999,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 3714.45
+    },
+    "H_SENSEX_15min_20260521104500": {
+      "direction": "SHORT",
+      "entry_price": 905.2374,
+      "exit_price": 986.7784180749971,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 1550.82
+    },
+    "H_SENSEX_15min_20260525131500": {
+      "direction": "LONG",
+      "entry_price": 1113.4,
+      "exit_price": 1131.65,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 285.0
+    },
+    "H_SENSEX_15min_20260527100000": {
+      "direction": "LONG",
+      "entry_price": 923.9,
+      "exit_price": 1041.79,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 2277.8
+    },
+    "H_SENSEX_15min_20260527114500": {
+      "direction": "SHORT",
+      "entry_price": 76039.48,
+      "exit_price": 75953.74,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 1514.8
+    },
+    "H_SENSEX_15min_20260529094500": {
+      "direction": "LONG",
+      "entry_price": 960.0,
+      "exit_price": 977.1,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 262.0
+    },
+    "H_SENSEX_15min_20260529111500": {
+      "direction": "SHORT",
+      "entry_price": 75923.8,
+      "exit_price": 75577.83,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 6719.4
+    },
+    "H_SENSEX_15min_20260529143000": {
+      "direction": "LONG",
+      "entry_price": 1014.0,
+      "exit_price": 955.68,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -1246.4
+    },
+    "H_SENSEX_15min_20260601110000": {
+      "direction": "LONG",
+      "entry_price": 939.95,
+      "exit_price": 875.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -1379.0
+    },
+    "H_SENSEX_15min_20260601114500": {
+      "direction": "SHORT",
+      "entry_price": 638.0,
+      "exit_price": 782.13,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 2802.6
+    },
+    "H_SENSEX_15min_20260602123000": {
+      "direction": "LONG",
+      "entry_price": 801.7,
+      "exit_price": 941.63,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 2718.6
+    },
+    "H_SENSEX_5min_20260515122000": {
+      "direction": "SHORT",
+      "entry_price": 905.94036,
+      "exit_price": 871.24,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -774.01
+    },
+    "H_SENSEX_5min_20260520100000_FUT": {
+      "direction": "SHORT",
+      "entry_price": 74808.87,
+      "exit_price": 74840.57,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "FUT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -834.0
+    },
+    "H_SENSEX_5min_20260521094000": {
+      "direction": "LONG",
+      "entry_price": 908.0038800000001,
+      "exit_price": 861.9778673899957,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -1000.52
+    },
+    "H_SENSEX_5min_20260521135000": {
+      "direction": "SHORT",
+      "entry_price": 901.61364,
+      "exit_price": 860.75,
+      "exit_reason": "SL HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -897.27
+    },
+    "H_SENSEX_5min_20260521142000": {
+      "direction": "LONG",
+      "entry_price": 902.84604,
+      "exit_price": 881.2846752699975,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -511.23
+    },
+    "H_SENSEX_5min_20260522124000": {
+      "direction": "LONG",
+      "entry_price": 908.0358,
+      "exit_price": 934.5655095250055,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 450.59
+    },
+    "H_SENSEX_5min_20260526092500": {
+      "direction": "LONG",
+      "entry_price": 917.71788,
+      "exit_price": 922.4564881149989,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 14.77
+    },
+    "H_SENSEX_5min_20260526100000": {
+      "direction": "LONG",
+      "entry_price": 918.08064,
+      "exit_price": 926.3590755200017,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 85.57
+    },
+    "H_SENSEX_5min_20260527105000": {
+      "direction": "LONG",
+      "entry_price": 1100.0,
+      "exit_price": 1097.95,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -121.0
+    },
+    "H_SENSEX_5min_20260601094000": {
+      "direction": "SHORT",
+      "entry_price": 675.65,
+      "exit_price": 790.15,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 2210.0
+    },
+    "H_SENSEX_5min_20260602101000": {
+      "direction": "SHORT",
+      "entry_price": 654.5,
+      "exit_price": 689.95,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 629.0
+    },
+    "H_SENSEX_5min_20260602112000": {
+      "direction": "LONG",
+      "entry_price": 824.95,
+      "exit_price": 852.2,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 465.0
+    },
+    "H_SENSEX_5min_20260602113500": {
+      "direction": "SHORT",
+      "entry_price": 602.55,
+      "exit_price": 630.0,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 469.0
+    },
+    "H_SENSEX_5min_20260603131500": {
+      "direction": "LONG",
+      "entry_price": 955.05,
+      "exit_price": 1066.69,
+      "exit_reason": "TARGET_HIT",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": 2152.8
+    },
+    "H_SENSEX_5min_20260603141500": {
+      "direction": "LONG",
+      "entry_price": 892.04232,
+      "exit_price": 865.4963923600018,
+      "exit_reason": "HISTORICAL",
+      "inst_type": "OPT",
+      "lot_size": 20,
+      "lots": 1,
+      "pnl": -610.92
+    }
+  },
+  "summary": {
+    "daily_pnl": 170554.0,
+    "fut_pnl": 70393.0,
+    "losses": 59,
+    "max_drawdown": 13251.847422703417,
+    "open_count": 0,
+    "opt_pnl": 100161.0,
+    "profit_factor": 3.030088880383874,
+    "sharpe_ratio": 4.927222150762358,
+    "total_trades": 138,
+    "win_rate": 57.2463768115942,
+    "wins": 79
+  }
+}

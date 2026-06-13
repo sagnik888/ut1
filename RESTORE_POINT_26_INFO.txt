@@ -1,0 +1,271 @@
+RESTORE POINT 26 - LIVE SIGNAL PIPELINE, DYNAMIC EXITS, RECOVERY REPORTING
+Updated: 2026-06-12 09:30:00 +05:30
+Source workspace: C:\Users\sagnik\Desktop\ut index 2
+Restore target: C:\Users\sagnik\Desktop\ut index 2\restore_point_26
+
+Reason:
+Save point for the June 11 live-session fixes covering intra-candle signal handling,
+parallel processing, execution timestamps, dynamic trade management, crash recovery,
+and transparent reporting of missed or rejected signals.
+
+Major fixes and upgrades captured:
+- Preserves source-candle time separately from actual broker acceptance/entry time.
+- Executes stabilized intra-candle signals without waiting for round 5/15-minute boundaries.
+- Records new entry and exit decisions to the second and shows HH:MM:SS in the
+  dashboard instead of visually rounding all activity to minute boundaries.
+- Restores actual saved execution time after a crash/restart instead of replacing
+  it with the source candle timestamp.
+- Keeps the 20-second repaint/market-intelligence stabilization process and subsequent
+  intra-candle repaint monitoring.
+- Processes simultaneous valid signals through a bounded three-worker execution queue;
+  cross-index batch preselection no longer silently discards signals.
+- Applies the 5-minute quality rule exactly as:
+  (A or A+ and confidence >= 70%) OR matching 15-minute trend.
+- Keeps weak setups such as MIDCPNIFTY B/45% blocked unless 15-minute agreement exists.
+- Adds option-specific breathing room and prevents tiny 2/5/7-point noise moves from
+  causing fresh option stop or market-intelligence panic exits.
+- Changes MAJOR WIN GUARD to require a fast adverse reversal, trend invalidation, or a
+  hard profit-retention breach; slow same-trend pullbacks defer the exit.
+- Increases trade stagnation timeout from 15 minutes to 20 minutes.
+- Scales stagnation from 20 to 30 minutes using index-normalized 1-minute volatility,
+  requires at least 0.5R peak profit, and defers while the underlying trend remains supportive.
+- Corrects grading so opposing multi-timeframe confluence reduces confidence instead of
+  increasing it, and caps the tight-stop bonus at its documented 5% weight.
+- Persists rejected-signal decisions in SQLite and generates daily JSON/CSV reports
+  combining database decisions, session ledger entries, activity logs, and runtime logs.
+- Exposes the report through GET /api/signal-report?date=YYYY-MM-DD.
+- Retains automatic live/session recovery state and periodic persistence.
+- Makes rapid settings changes latest-wins: a new settings-refresh request
+  supersedes and cancels an already-running stale recalculation instead of
+  waiting for the old backtest window to finish first.
+- Reduces dashboard throttling by broadcasting trade table changes only when
+  the trade payload actually changes, skipping heavy redraws for heartbeat-only
+  deltas, pausing chart polling while the tab is hidden, and reducing chart
+  polling from every 1 second to every 3 seconds.
+- Caps live dashboard trade history inside /api/state and WebSocket payloads
+  to the current window while keeping full closed/signal history available
+  through /api/trades pagination.
+- Restores full 30-day backtest table visibility by auto-hydrating the capped
+  dashboard window from /api/trades pages, while preserving the lightweight
+  live-state payload that prevents dashboard lag.
+- Bumps the dashboard JavaScript cache key so browsers load the full-history
+  table fix immediately.
+- Forces restart/startup historical scope to the latest session/day, regardless of
+  the previously selected 30-day backtest window, to prevent startup bottlenecks.
+- Keeps REAL/live dashboard trade reconstruction scoped to the current session/day.
+- Adds closed-market idle protection so the scanner does not repeatedly recompute
+  unchanged off-market charts when no active trade/session action needs work.
+- Hardens /api/state serialization for NumPy/Pandas scalar values and snapshots
+  mutable dashboard payloads before JSON encoding, preventing 500 responses that
+  can freeze the dashboard after live scanner updates.
+- Keeps raw pytest collection clean by excluding old scratch DB probes and nested
+  temporary restore copies from the default maintained suite.
+- Removes unreachable legacy trade-exit code after the broker-safe close path.
+- Restores dashboard chart refresh after browser reload: /api/chart now returns
+  candle-only chart payloads when the indicator/result cache is not ready yet,
+  then overlays trailing stop/markers once the next scan fills them.
+- Removes the stuck "chart stream paused" placeholder whenever chart stream is
+  enabled or valid chart data renders, and bumps the app.js cache key to
+  4.35-chart-refresh.
+- Expands activity-panel observability for signal lifecycle decisions:
+  historical/backtest rejects are now panel-visible, stale live backfill signals
+  are logged as ignored, partial-candle deferrals are logged as waiting, broker
+  handoff is logged when a buffered/filter-passed trade is sent, and repaint
+  guard start/pass events are visible and included in daily signal reports.
+- Fixes option instrument/price-space contamination in active trade management:
+  option intrabar extremes already expressed as premiums are no longer converted
+  a second time as if they were index spot values. A final option-mark invariant
+  now rejects implausible premium marks before P&L, peak-profit, stop, or exit
+  guards can consume them.
+- Disables unsafe restart inference that created phantom REAL-mode trades from the
+  latest chart arrow. Genuine crash recovery still restores persisted SQLite and
+  broker-backed open trades; chart signals alone can no longer populate Trade Manager.
+- Removed the three confirmed June 12 09:40 phantom recovery rows after saving
+  data_store/utbot_data.before_option_mismatch_fix_20260612_0946.db.
+
+Verification:
+- Python compile checks passed.
+- Focused upgrade, session-ledger, concurrency, and trade-manager tests passed.
+- Focused intrabar timing suite: 65 passed.
+- Maintained full suite: 233 passed, 4 deselected.
+- Updated localhost dashboard and API rendered successfully in safe HISTORICAL mode.
+- Settings refresh cancellation regression passed.
+- Dashboard throttling, payload-window, and full-history hydration regressions
+  plus JavaScript syntax checks passed.
+- Maintained full suite after backtest table-history fix: 238 passed, 4 deselected.
+- Local API timing improved after restart: /api/state about 72.5 ms and
+  /api/chart about 94 ms in safe HISTORICAL mode.
+- Final post-cap API check: /api/state about 335 ms and about 97 KB with
+  current-window trade rows instead of the earlier about 696 KB state payload.
+- Browser smoke passed on http://localhost:7000 with 87 trade rows instead of
+  the earlier roughly 890-row render load.
+- June 11 report generated with 12 rejected, 9 accepted, and 9 exit records.
+- Full maintained/default pytest suite after dashboard state and chart fixes:
+  256 passed, 4 deselected.
+- Python compile checks and dashboard JavaScript syntax checks passed.
+- /api/state, /api/status, and /api/trades handled 100-request burst checks
+  without HTTP failures after the serialization hardening.
+- /api/chart returned 300 candles for all 12 chart combinations:
+  NIFTY, BANKNIFTY, SENSEX, MIDCPNIFTY across 1min, 5min, and 15min.
+- Browser refresh loaded app.js?v=4.35-chart-refresh, showed chart stream ON,
+  removed the disabled placeholder, rendered chart canvases, and reported no
+  console errors.
+- Activity-panel lifecycle regression passed, full maintained/default pytest
+  suite passed with 257 passed and 4 deselected, Python compile and dashboard
+  JavaScript syntax checks passed, localhost restarted in REAL mode, /api/state
+  returned HTTP 200, and browser verification showed the activity tape rendering
+  with no console errors.
+- Option price-domain and restart-recovery regressions passed; focused suite:
+  65 passed. Full maintained/default suite: 259 passed, 4 deselected.
+- After database cleanup and REAL-mode restart, /api/trades reported zero phantom
+  open/closed trades and daily P&L returned to zero.
+- Post-change restart correctly entered safe mode because verification occurred after
+  regular market hours; full live-feed repopulation must occur at the next market session.
+- Repaired repeated missed intrabar entries caused by two live decision-state bugs:
+  forming-candle candidate decisions are no longer reused from the 15-second cache,
+  and a quality-rejected forming BUY/SELL arrow is re-evaluated once per second while
+  it remains on the active candle. Re-evaluation stops as soon as the signal enters
+  the 20-second stabilization buffer, is accepted, repaints, or the candle closes.
+- Stale backfill arrows now consume both the timestamp and direction identity, preventing
+  the same ghost signal from being reconsidered and logged on every scan.
+- Verified that dashboard/order entry time remains the actual post-buffer acceptance
+  second; the round 5/15-minute time is retained only as the source-candle timestamp.
+- June 12 full-session candle audit found four closed 5-minute SELL arrows so far:
+  NIFTY, SENSEX, and MIDCPNIFTY at 09:40, and BANKNIFTY at 10:00. No 15-minute SELL
+  arrows existed in the audited data. Full maintained suite: 261 passed, 4 deselected.
+- Repairs live signal-ledger presentation without changing the entry engine:
+  EXIT rows inherit the original post-buffer accepted entry second instead of falling
+  back to the round source-candle timestamp; ENTRY/EXIT rows are paired by a stable
+  lifecycle identity so a completed trade replaces its active SIG row; and the panel
+  is sorted newest-first by accepted entry time rather than mixing entry and exit clocks.
+- Existing June 12 rows are repaired automatically from their persisted matching ENTRY
+  records. Dashboard cache key updated to 4.36-entry-lifecycle. Full maintained suite:
+  263 passed, 4 deselected.
+- Audited the June 12 SENSEX 10:35 5-minute BUY lifecycle. The first forming arrow
+  repainted after about six seconds; the valid replacement began stabilizing near
+  10:40, but a service restart interrupted its timer and forced a second full wait,
+  producing the 10:41:07 acceptance time.
+- Pending live stabilization buffers are now checkpointed immediately with their
+  original start time, source-candle timestamp, and BUY/SELL identity. A restart
+  resumes elapsed stabilization time only after a fresh indicator pass confirms the
+  same arrow; changed, missing, stale, or cross-session signals remain rejected.
+- Matured or rejected buffers are also checkpointed immediately after removal so a
+  second restart cannot resurrect them. Full maintained suite: 264 passed, 4 deselected.
+- Audited the June 12 NIFTY 10:55 5-minute BUY timing. The forming candle reached
+  the scanner by 10:55:02, but the quote bridge replaced fresh WebSocket LTP with
+  a blocking Fyers REST quote whenever WS day-change fields were absent. Near a UT
+  trailing-stop crossover this could rewind the live candle and delay detection.
+- Fresh AngelOne/Fyers WebSocket LTP now always wins immediately. Missing day-change
+  fields are derived from cached previous close when available; REST is used only
+  when no fresh WS quote exists. Live restart verification reported Angel WS age
+  0.00 seconds and the maintained suite passed with 266 tests, 4 deselected.
+
+Operational note:
+- The live activity feed showed intermittent CPU/scanner-latency warnings after market
+  close, followed by normal live updates. This checkpoint records that residual
+  performance risk; it is not a signal-processing correctness failure.
+- Historical rows created before this fix can still display minute-only timestamps
+  because their persisted records never contained seconds. New accepted entries and
+  exits preserve and display their real decision/execution seconds.
+
+[PATCH - 12 Jun 2026]
+- Lowered 5min and 15min confidence gate thresholds from 0.70 to 0.60
+- Implemented EXPLOSIVE MOVE BYPASS (ADX >= 25 or Int_Score Outlier) to override strict choppy blocks and gate thresholds for both live and historical backfills, ensuring massive index moves are never missed again.
+
+
+[PATCH - 12 Jun 2026]
+- Added Explosive Bypass Reversal Guard: Trades bypassing the confidence gates due to massive momentum are now tagged with 'is_explosive_bypass'.
+- These bypassed trades are heavily guarded during the tracking loops. If they display a 'fast adverse reversal' or 'lost trend support', they are immediately closed out as 'EXPLOSIVE_BYPASS_FAILED', protecting capital from fake-out spikes.
+
+
+[PATCH - 12 Jun 2026 - UPDATE 2]
+- Implemented ULTIMATE SYSTEM FAILSAFE guard across both live and historical tracking loops.
+- Trades will now immediately hard-exit if the absolute unrealized loss exceeds 'max_trade_loss_abs' (default 15000) OR if the price breaches the hard system stop-loss percentage limit (options_sl_pct/futures_sl_pct).
+- This strictly acts as a last-resort override, protecting against intelligence system failure, scanning lag, or scanner rule conflicts to completely prevent unlimited capital drawdowns.
+
+
+[PATCH - 12 Jun 2026 - UPDATE 3]
+- Corrected the futures max stop loss percentage limit from 0.30% to 0.15% across settings and system failsafe fallbacks.
+
+
+[PATCH - 12 Jun 2026 - UPDATE 4]
+- Verified and correctly updated live and historical tracking loops with ultimate failsafe checks.
+- Cleaned up temp scripts.
+
+[PATCH - 12 Jun 2026 - UPDATE 5]
+- Completed the final performance audit follow-up without introducing ProcessPool risk into
+  the stateful live scanner path.
+- Added dedicated scanner worker pools:
+  IO pool for broker/API/history/session/report persistence work, and compute pool for
+  scanner analysis/recalculation work. This prevents slow data calls from blocking signal
+  calculations in the default asyncio executor.
+- Routed live LTP fallback, morning refresh prewarm, option/futures LTP checks, historical
+  fetches, recovery checkpoint saves, daily signal report generation, session-ledger SQLite
+  flushes, daily maintenance, and recalculation worker dispatch through explicit pools.
+- Restored the 5-minute quality-gate contract: (A/A+ and configured confidence threshold)
+  OR 15-minute trend agreement. The stricter 5-minute timing rule no longer incorrectly
+  blocks ordinary 15-minute signals.
+- Restored live/historical gate parity checks and explicit 0.72 choppy confidence contract.
+- Moved live ultimate failsafe behind valid peak-profit protection so a futures trade with
+  an intrabar profit peak can exit as SMART_PROFIT_LOCK instead of being mislabeled as
+  ULTIMATE_STOP_HIT.
+- Restored startup hydration guard visibility and STARTING market status so foreground scans
+  do not race background startup hydration.
+- Added clean executor shutdown in Scanner.stop().
+- Verification after update:
+  focused prior failures: 5 passed;
+  maintained full suite: 266 passed, 4 deselected;
+  Python compile checks passed;
+  dashboard JavaScript syntax check passed;
+  full system audit script passed AngelOne/Fyers connectivity, 5-minute historical candle
+  alignment, live prices, Fyers volume, and option chains for all active indices.
+
+[PATCH - 12 Jun 2026 - UPDATE 6]
+- Re-applied the requested 5-minute quality-gate baseline at 60% in both code defaults
+  and the active .env runtime setting. The active rule is now:
+  (A/A+ and confidence >= 60%) OR 15-minute trend agreement OR explosive-move bypass.
+- Activated explosive bypass tagging end-to-end. Candidates are now tagged when ADX is
+  at/above the configured momentum threshold or normalized intelligence score is an
+  extreme outlier; the tag is serialized to dashboard/session rows and propagated into
+  TradeManager.open_trade so live positions can be guarded by EXPLOSIVE_BYPASS_FAILED.
+- Persisted is_explosive_bypass through Trade.to_dict/from_dict so crash recovery and
+  saved trade state preserve the stricter bypass guard.
+- Audited candidate/session peak-PnL logic and found it is required for historical and
+  session-row SMART_PROFIT_LOCK accuracy. _candidate_candle_extreme_price now prefers
+  accepted entry timestamp and excludes the entire entry minute, matching the live
+  _trade_candle_extreme_price behavior and preventing fake entry-minute wick peaks.
+- Updated the maintained regression contract from 70% to 60%.
+- Verification after update:
+  focused gate/trade-manager/toggle/history tests: 21 passed;
+  maintained full suite: 266 passed, 4 deselected;
+  Python compile checks passed;
+  dashboard JavaScript syntax check passed;
+  runtime sanity check confirmed bypass persistence and candidate peak exclusion;
+  full system audit script passed AngelOne/Fyers connectivity, candle alignment,
+  live prices, Fyers volume, and option chains for all active indices.
+
+[PATCH - 12 Jun 2026 - UPDATE 7]
+- Fixed multi-day backtest recalculation beyond one day.
+- Root cause 1: _fetch_all_data accepted calls with days_back_override but the
+  function signature did not define that parameter, causing 30-day backtest
+  fallback/recalculation to fail with NameError.
+- Root cause 2: historical startup hydration could still try to use the selected
+  full backtest window. Startup is now always latest-session only; explicit
+  backtest recalculation owns wider windows such as 30 days.
+- Root cause 3: the isolated recalculation worker wrote a valid manifest but
+  broker SDK background streams kept the child process alive until timeout.
+  MarketDataProvider now supports history-only start_streams=False, and the
+  worker exits after flushing its manifest.
+- Added a historical recalculation pending gate so foreground scan cycles do not
+  steal the scan lock while settings-triggered historical rebuilds are queued.
+- Runtime verification confirmed 30-day backtest command completed with
+  worker=ok, loaded_rows=30510, backtest_days=30, and no new
+  days_back_override errors after restart.
+- Verification after update:
+  focused startup/recalculation tests: 9 passed;
+  maintained full suite: 266 passed, 4 deselected;
+  Python compile checks passed;
+  dashboard JavaScript syntax check passed;
+  full system audit script passed AngelOne/Fyers connectivity, candle alignment,
+  live prices, Fyers volume, and option chains for all active indices.
+

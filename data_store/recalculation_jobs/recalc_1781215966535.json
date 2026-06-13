@@ -1,0 +1,106 @@
+{
+  "status": "ok",
+  "started_at": 1781215971.311166,
+  "finished_at": 1781215975.34898,
+  "duration_seconds": 4.038,
+  "files": [
+    {
+      "instrument": "NIFTY",
+      "timeframe": "1min",
+      "path": "data_store\\candles\\NIFTY_1min.csv",
+      "rows": 5000,
+      "days_back": 7,
+      "exists": true
+    },
+    {
+      "instrument": "NIFTY",
+      "timeframe": "5min",
+      "path": "data_store\\candles\\NIFTY_5min.csv",
+      "rows": 1650,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "NIFTY",
+      "timeframe": "15min",
+      "path": "data_store\\candles\\NIFTY_15min.csv",
+      "rows": 1100,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "BANKNIFTY",
+      "timeframe": "1min",
+      "path": "data_store\\candles\\BANKNIFTY_1min.csv",
+      "rows": 5000,
+      "days_back": 7,
+      "exists": true
+    },
+    {
+      "instrument": "BANKNIFTY",
+      "timeframe": "5min",
+      "path": "data_store\\candles\\BANKNIFTY_5min.csv",
+      "rows": 1650,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "BANKNIFTY",
+      "timeframe": "15min",
+      "path": "data_store\\candles\\BANKNIFTY_15min.csv",
+      "rows": 1100,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "SENSEX",
+      "timeframe": "1min",
+      "path": "data_store\\candles\\SENSEX_1min.csv",
+      "rows": 4997,
+      "days_back": 7,
+      "exists": true
+    },
+    {
+      "instrument": "SENSEX",
+      "timeframe": "5min",
+      "path": "data_store\\candles\\SENSEX_5min.csv",
+      "rows": 1650,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "SENSEX",
+      "timeframe": "15min",
+      "path": "data_store\\candles\\SENSEX_15min.csv",
+      "rows": 1100,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "MIDCPNIFTY",
+      "timeframe": "1min",
+      "path": "data_store\\candles\\MIDCPNIFTY_1min.csv",
+      "rows": 4500,
+      "days_back": 7,
+      "exists": true
+    },
+    {
+      "instrument": "MIDCPNIFTY",
+      "timeframe": "5min",
+      "path": "data_store\\candles\\MIDCPNIFTY_5min.csv",
+      "rows": 1650,
+      "days_back": 20,
+      "exists": true
+    },
+    {
+      "instrument": "MIDCPNIFTY",
+      "timeframe": "15min",
+      "path": "data_store\\candles\\MIDCPNIFTY_15min.csv",
+      "rows": 700,
+      "days_back": 20,
+      "exists": true
+    }
+  ],
+  "errors": [],
+  "pid": 21132
+}

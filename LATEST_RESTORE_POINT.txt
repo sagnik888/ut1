@@ -1,0 +1,25 @@
+Latest restore point: restore_point_26
+Updated: 2026-06-11 18:40:03 +05:30
+Source workspace: C:\Users\sagnik\Desktop\ut index 2
+Restore folder: C:\Users\sagnik\Desktop\ut index 2\restore_point_26
+
+Checkpoint summary:
+- Preserves restorepoint 25 production hardening and current live recovery data.
+- Supports immediate stabilized intra-candle entry with separate signal and execution times.
+- Processes simultaneous signals independently through a bounded worker pool.
+- Enforces 5-minute A/A+ >=70% or matching 15-minute trend.
+- Corrects directional confluence scoring and uses volatility/risk-aware stagnation.
+- Adds dynamic option breathing room and trend-aware major-win exits.
+- Increases stagnation timeout to 20 minutes.
+- Persists and reports all missed/rejected decisions through DB, JSON/CSV, and dashboard API.
+- Records and displays actual entry/exit seconds while retaining source-candle time separately.
+- Cancels stale in-flight settings recalculations when a newer settings save arrives.
+- Reduces dashboard lag by making trade WebSocket broadcasts change-driven,
+  treating heartbeat-only deltas as lightweight UI updates, and throttling chart
+  polling to 3 seconds with hidden-tab pause.
+- Caps /api/state and WebSocket trade rows to a current dashboard window while
+  leaving full history available through /api/trades pagination.
+- Auto-hydrates full historical/backtest trade rows from /api/trades pages so
+  30-day backtests show all table rows without making live state payloads heavy.
+- Validated by focused timing/cancellation/dashboard tests, 238 maintained tests,
+  and localhost browser/API checks.

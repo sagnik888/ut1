@@ -1,0 +1,110 @@
+RESTORE POINT 23 - GPU ACCELERATION, DYNAMIC RR, LIVE CONCURRENCY-OFF HARDENING
+Updated: 2026-06-07 05:15:00 +05:30
+Source workspace: C:\Users\sagnik\Desktop\ut index 2
+Restore target: C:\Users\sagnik\Desktop\ut index 2\restore_point_23
+Reason: Preserve the verified system after RTX 4060 CuPy CUDA acceleration support, dynamic RR settings, live concurrency-off hardening, and hardware monitor fixes.
+
+Verification:
+- CuPy CUDA compute verified on RTX 4060.
+- GPU diagnostics now show compute backend `cupy_cuda` and vector acceleration readiness.
+- UT1 process RAM no longer reports 0 MB.
+- Standalone GPU benchmark after warm-up showed about 2.97x speedup at 1M vectors and 3.81x speedup at 5M vectors.
+- Full automated suite passed: 149 passed, 4 deselected.
+- Localhost/API verified in HISTORICAL mode after clean restart.
+
+Primary fixes:
+- Added engine/gpu_accelerator.py and optional GPU vector analytics path.
+- Added GPU runtime dependencies to requirements.txt.
+- Added dynamic RR settings and runner-mode settings.
+- Concurrency guard OFF now allows rare same-index cross-timeframe/instrument overlap in both historical display and live/REAL candidate handling.
+- Dashboard UT1 State panel now shows compute backend and benchmark speed.
+
+See RESTORE_POINT_23_INFO.txt and reports\GPU_ACCELERATION_AUDIT_RESTORE23_2026-06-07.md for full details.
+
+===============================================================================
+
+RESTORE POINT 22 - DETERMINISTIC HISTORICAL RESTART AND SYSTEM HARDENING
+Updated: 2026-06-07 01:35:00 +05:30
+Source workspace: C:\Users\sagnik\Desktop\ut index 2
+Restore target: C:\Users\sagnik\Desktop\ut index 2\restore_point_22
+Reason: Preserve the verified system after eliminating restart-order drift in historical P&L and trade selection.
+
+Verification:
+- Two clean 22-day starts both produced Rs 207,026 P&L and 157 trades.
+- The 100 displayed rows matched exactly with hash 0ef8d63227b2e01a.
+- Focused tests: 32 passed.
+- Full root suite: 130 passed, 3 deselected.
+- Dashboard/API verified in HISTORICAL mode with zero open live trades.
+
+Primary fixes:
+- Historical candidate workers no longer reject against a partially populated shared trade list.
+- Final concurrency filtering has deterministic tie-break ordering.
+- Historical option/futures P&L uses configured transaction costs.
+- Regression tests cover deterministic tied-trade filtering and configured costs.
+
+See RESTORE_POINT_22_INFO.txt for full details.
+
+===============================================================================
+
+RESTORE POINT 20 - LIVE TRADE SAFETY, OPTIONS PARITY, DASHBOARD HEARTBEAT
+Updated: 2026-06-04 12:35:00 +05:30
+Source workspace: C:\Users\sagnik\Desktop\tt1 index -utbot
+Restore target: C:\Users\sagnik\Desktop\tt1 index -utbot\restore_point_20
+Reason: Preserve all fixes made through the live-market audit covering P&L protection, futures/spot basis handling, options handling, live worker failover, and dashboard refresh truthfulness.
+
+Current progress captured:
+- Dashboard/runtime remains intended for port 7000.
+- Runtime remains safe for manual review unless auto mode is deliberately enabled by the operator.
+- Dashboard websocket heartbeat is now 1.0s and refreshes lightweight trade rows plus current index LTP/spot fields from in-memory candles between full scan cycles.
+- Dashboard heartbeat is injected into REST state, initial WebSocket state, scanner broadcasts, and periodic dashboard broadcasts so the LIVE display does not stay `--` when raw scanner data arrives.
+- Frontend LIVE display falls back to WebSocket receive age when an older runtime sends scan updates without `dashboard_heartbeat`, and the script URL is cache-busted to `v=4.31-live-heartbeat-fallback`.
+- Active real trade protection now uses 1-minute candle high/low extremes to reconstruct missed intrabar peak P&L before applying `SMART_PROFIT_LOCK` / `MAJOR_WIN_GUARD`.
+- Active trade protection no longer exits early from the whole management path when UT engine state is missing; trailing is skipped, but P&L lock and stop management still run.
+- Dashboard displays LIVE heartbeat age separately from full scanner latency.
+- Full scanner latency remains reported honestly; the heartbeat no longer pretends that full intelligence/chart analysis finishes every 1.5s.
+- Live worker timeout handling no longer leaves stale shielded tasks owning an instrument indefinitely.
+- Timeout/backlog fallback keeps manual/session rows and active trade monitoring alive while fresh analysis catches up.
+- FUT trades are opened/tracked in futures contract price space, with spot used only for index analysis and basis-preserving fallback.
+- Futures stops, targets, profit locks, runner locks, and live alerts now compare against futures trade price, not index spot.
+- Manual/session signal rows now share the same profit-lock and breach accounting path as auto/real trade rows.
+- Peak-P&L protection can lock 70%/75% of favorable moves for scalp/major-win cases instead of waiting for original stop loss.
+- Option chains were confirmed live; AUTO was adjusted so strong option-quality momentum can become OPT instead of always falling back to FUT in volatile/choppy regimes.
+- Weak B/B+ 5min choppy setups still remain FUT or blocked to avoid option decay/noise.
+- Option candidate premiums now use the unified `data.get_ltp()` quote path, with synthetic premium only as final fallback.
+- Added visible instrument-type decision logs explaining why AUTO chose FUT or OPT.
+
+Primary source/config/test files included in this refresh:
+- dashboard/server.py
+- dashboard/static/index.html
+- dashboard/static/js/app.js
+- data/market_data.py
+- engine/signal_processor.py
+- scanner.py
+- trading/trade_manager.py
+- intelligence/intelligence_aggregator.py
+- intelligence/oi_tracker.py
+- intelligence/order_flow.py
+- test_futures_spot_basis.py
+- test_index_quote_live_sync.py
+- test_option_contract_ltp.py
+- test_option_grade_policy.py
+- test_option_backtest_timing.py
+- test_session_exit_ledger.py
+
+Verified before restore metadata refresh:
+- `node --check dashboard/static/js/app.js` passed.
+- `python -m py_compile dashboard/server.py` passed after the LIVE heartbeat hotfix.
+- Direct `_prepare_dashboard_payload(...)` check confirmed `dashboard_heartbeat.timestamp` is present.
+- `pytest -q test_futures_spot_basis.py` passed after adding the BANKNIFTY intrabar peak profit-lock regression.
+- `pytest -q test_futures_spot_basis.py test_session_exit_ledger.py` passed: 25 passed.
+- `python -m py_compile dashboard/server.py scanner.py engine/signal_processor.py trading/trade_manager.py data/market_data.py intelligence/intelligence_aggregator.py intelligence/oi_tracker.py intelligence/order_flow.py` passed.
+- `pytest -q test_option_grade_policy.py test_option_contract_ltp.py test_option_backtest_timing.py test_futures_spot_basis.py test_session_exit_ledger.py test_index_quote_live_sync.py test_market_intelligence_precision.py test_settings_intelligence_audit.py test_spot_risk.py` passed: 45 passed, 1 deselected.
+
+Known caveats:
+- This is a restoration checkpoint, not a git commit.
+- Full intelligence/chart analysis still depends on scan-cycle completion; the 1.0s heartbeat keeps live dashboard/trade fields fresh between full scans.
+- The restore point contains sensitive runtime files such as `.env` and broker auth material. Treat the folder as sensitive.
+
+Restore notes:
+- To compare this checkpoint with the active workspace, diff `C:\Users\sagnik\Desktop\tt1 index -utbot\restore_point_20` against `C:\Users\sagnik\Desktop\tt1 index -utbot`, excluding restore folders and runtime logs.
+- The canonical restore point for this system is inside `C:\Users\sagnik\Desktop\tt1 index -utbot`.

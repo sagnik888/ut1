@@ -1,0 +1,76 @@
+{
+  "status": "running",
+  "connected_clients": 2,
+  "scanner_running": true,
+  "mode": "HISTORICAL",
+  "config": {
+    "capital_total": 1100000.0,
+    "capital_fut": 600000.0,
+    "risk_fut_pct": 1.5,
+    "capital_opt": 500000.0,
+    "risk_opt_pct": 12.0,
+    "lots": {
+      "NIFTY": 1,
+      "BANKNIFTY": 1,
+      "SENSEX": 1,
+      "MIDCPNIFTY": 1
+    },
+    "lots_fut": {
+      "NIFTY": 1,
+      "BANKNIFTY": 1,
+      "SENSEX": 1,
+      "MIDCPNIFTY": 1
+    },
+    "fut_sl": 0.2,
+    "opt_sl": 15.0,
+    "fut_cost": 200.0,
+    "opt_cost": 60.0,
+    "backtest_days": 22,
+    "auto_mode": false,
+    "inst_pref": "AUTO",
+    "active_indices": [
+      "NIFTY",
+      "BANKNIFTY",
+      "SENSEX",
+      "MIDCPNIFTY"
+    ],
+    "strike_selection": "BOTH",
+    "sl_mode": "NATURAL",
+    "grade_preference": "B",
+    "ut_regime_adaptation": true,
+    "ut_concurrency_guard": true,
+    "ut_no_entry_after": "15:01",
+    "intelligence_cache_ttl_seconds": 90.0,
+    "history_cache_ttl_seconds": 120.0,
+    "ut_option_history_mode": "fetch_or_synthetic",
+    "ut_backtest_more_results": true,
+    "ut_timeframe_entry_policy": "INCLUDE_5MIN",
+    "ut_5min_option_min_confidence": 0.9,
+    "ut_5min_loss_cooldown_minutes": 45,
+    "live_filter_leniency_pct": 0.0,
+    "live_choppy_gate_confidence": 0.9,
+    "live_signal_stabilization_seconds": 25.0,
+    "live_restart_recovery_grace_seconds": 120.0,
+    "chart_stream_enabled": true,
+    "ut_preset": "AGGRESSIVE"
+  },
+  "last_scan": "2026-06-07T01:06:37.848196+05:30",
+  "scan_count": 26,
+  "latency": 331,
+  "pid": 21180,
+  "gateway_status": {
+    "angel": true,
+    "fyers": true,
+    "fyers_auth_required": false,
+    "fyers_auth_reason": "",
+    "fyers_refresh_disabled": false,
+    "yahoo": true
+  },
+  "fyers_auth": {
+    "connected": true,
+    "auth_required": false,
+    "reason": "",
+    "refresh_disabled": false,
+    "token_updated_at": "2026-06-06T07:09:03.863295"
+  }
+}

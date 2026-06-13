@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+logs/
+.env
+data_store/*.db
+data_store/*.db.bak*
+data_store/*.json
+data_store/*.csv
+data/*.db
+RESTORE_POINT_*
+*.log

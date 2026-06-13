@@ -1,0 +1,22 @@
+{
+  "status": "ok",
+  "started_at": 1780951489.3690877,
+  "finished_at": 1780951491.9495635,
+  "duration_seconds": 2.58,
+  "files": [],
+  "errors": [
+    "NIFTY 1min: object of type 'coroutine' has no len()",
+    "NIFTY 5min: object of type 'coroutine' has no len()",
+    "NIFTY 15min: object of type 'coroutine' has no len()",
+    "BANKNIFTY 1min: object of type 'coroutine' has no len()",
+    "BANKNIFTY 5min: object of type 'coroutine' has no len()",
+    "BANKNIFTY 15min: object of type 'coroutine' has no len()",
+    "SENSEX 1min: object of type 'coroutine' has no len()",
+    "SENSEX 5min: object of type 'coroutine' has no len()",
+    "SENSEX 15min: object of type 'coroutine' has no len()",
+    "MIDCPNIFTY 1min: object of type 'coroutine' has no len()",
+    "MIDCPNIFTY 5min: object of type 'coroutine' has no len()",
+    "MIDCPNIFTY 15min: object of type 'coroutine' has no len()"
+  ],
+  "pid": 10228
+}

@@ -1,0 +1,15 @@
+{
+  "date": "2026-06-13",
+  "generated_at": "2026-06-13T05:43:24.183284+05:30",
+  "summary": {
+    "missed_or_rejected": 0,
+    "accepted_signals": 0,
+    "exits": 0,
+    "by_status": {},
+    "by_instrument": {},
+    "top_reasons": {}
+  },
+  "decisions": [],
+  "accepted_signals": [],
+  "exits": []
+}

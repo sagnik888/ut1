@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UT1 | Institutional Alpha Terminal</title>
+    <meta name="description" content="Real-time algo trading dashboard for NIFTY, BANKNIFTY, SENSEX, MIDCPNIFTY with UT1 signals">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css?v=4.29-chart-stream-toggle">
+</head>
+<body>
+    <!-- ═══ TOP NAV BAR ═══ -->
+        <header id="topbar">
+        <!-- CAP 1: ANCHOR -->
+        <div class="topbar-capsule anchor-capsule">
+            <div class="logo" id="systemRefreshBtn" title="Recalibrate & Refresh System (Preserves Trades & PnL)">
+                <span class="logo-icon">◆</span>
+                <span class="logo-text">UT1</span>
+            </div>
+            <div class="market-time">
+                <span class="time-value" id="marketTime">--:--:--</span>
+                <span class="date-value" id="marketDate">-- --- ----</span>
+            </div>
+        </div>
+
+        <!-- CAP 2: ENGINE -->
+        <div class="topbar-capsule engine-capsule">
+            <div class="mode-switch-pill">
+                <button class="mode-opt active" data-mode="HISTORICAL">HIST</button>
+                <button class="mode-opt" data-mode="REAL">REAL</button>
+                <div class="mode-switch-slider"></div>
+            </div>
+            <div class="capsule-divider"></div>
+            <div class="switch-group">
+                <span class="switch-label">SYS</span>
+                <label class="modern-toggle" title="Toggle System Execution">
+                    <input type="checkbox" id="powerToggle" checked>
+                    <span class="modern-slider"></span>
+                </label>
+            </div>
+            <div class="switch-group">
+                <span class="switch-label">AUTO</span>
+                <label class="modern-toggle" title="Toggle Auto Execution">
+                    <input type="checkbox" id="autoModeSwitch" checked>
+                    <span class="modern-slider"></span>
+                </label>
+            </div>
+            <div class="switch-group chart-stream-switch">
+                <span class="switch-label">CHART</span>
+                <label class="modern-toggle" title="Toggle dashboard chart streaming">
+                    <input type="checkbox" id="chartStreamSwitch" checked>
+                    <span class="modern-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- CAP 3: RISK & STRATEGY -->
+        <div class="topbar-capsule strategy-capsule">
+            <div class="tf-policy-wrapper">
+                <span class="switch-label">TF</span>
+                <select id="topTimeframePolicy" class="tf-policy-select modern-select">
+                    <option value="PRIMARY_15">15M</option>
+                    <option value="INCLUDE_5MIN">5M+15M</option>
+                </select>
+            </div>
+            <div class="capsule-divider"></div>
+            <div class="switch-group">
+                <span class="switch-label">REGIME</span>
+                <label class="modern-toggle pill-style" title="Toggle Regime Adaptation">
+                    <input type="checkbox" id="regimeModeSwitch">
+                    <span class="modern-slider" data-on="ON" data-off="OFF"></span>
+                </label>
+            </div>
+            <div class="switch-group">
+                <span class="switch-label">C-GRD</span>
+                <label class="modern-toggle pill-style" title="Toggle Concurrency Guard">
+                    <input type="checkbox" id="concurGuardSwitch">
+                    <span class="modern-slider" data-on="ON" data-off="OFF"></span>
+                </label>
+            </div>
+            <div class="switch-group">
+                <span class="switch-label">SL</span>
+                <label class="modern-toggle pill-style" title="Toggle Natural ATR vs Fixed % Stop Loss">
+                    <input type="checkbox" id="slModeSwitch" checked>
+                    <span class="modern-slider" data-on="NAT" data-off="FIX"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- CAP 4: TELEMETRY -->
+        <div class="topbar-capsule telemetry-capsule">
+            <div class="status-group">
+                <div class="connection-status" id="connectionStatus" title="Connection Status">
+                    <span class="status-dot"></span>
+                </div>
+                <div class="analysing-signal" id="analysingSignal" title="Force Backend Rescan (Click)">
+                    <span class="signal-dot" id="analysisDot"></span>
+                    <span class="signal-text" id="analysisText">IDLE</span>
+                </div>
+            </div>
+            <div class="capsule-divider"></div>
+            <div class="scan-info-row">
+                <div class="scan-metric">
+                    <span class="metric-val" id="scanCount">0</span>
+                    <span class="metric-lbl">SCAN</span>
+                </div>
+                <div class="scan-metric">
+                    <span class="metric-val" id="scanLatency">--ms</span>
+                    <span class="metric-lbl">LAT</span>
+                </div>
+                <div class="scan-metric">
+                    <span class="metric-val" id="liveRefreshAge">--</span>
+                    <span class="metric-lbl">LIVE</span>
+                </div>
+            </div>
+            <div class="capsule-divider"></div>
+            <button class="settings-btn modern-gear" id="settingsBtn" title="Settings">⚙️</button>
+        </div>
+    </header>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <main id="mainGrid">
+        <!-- ─── LEFT: CHART AREA ─── -->
+        <section class="panel chart-panel" id="chartPanel">
+            <div class="panel-header">
+                <div class="tf-tabs" id="tfTabs">
+                    <button class="tf-tab" data-tf="1min">1M <span class="tf-pos-dot" id="dot1m"></span></button>
+                    <button class="tf-tab active" data-tf="5min">5M <span class="tf-pos-dot" id="dot5m"></span></button>
+                    <button class="tf-tab" data-tf="15min">15M <span class="tf-pos-dot" id="dot15m"></span></button>
+                </div>
+
+                <!-- ═══ RELOCATED INSTRUMENT PANEL ═══ -->
+                <div class="header-instrument-panel chart-header-mode">
+                    <div class="instrument-tabs" id="instrumentTabs">
+                        <button class="inst-tab active" data-instrument="NIFTY" id="tab_NIFTY">
+                            <span class="inst-name">NIFTY</span>
+                            <div class="inst-price-row">
+                                <span class="inst-price" id="price_NIFTY">--</span>
+                                <span class="inst-change" id="change_NIFTY">--</span>
+                            </div>
+                            <span class="inst-signal" id="signal_NIFTY">SCANNING</span>
+                        </button>
+                        <button class="inst-tab" data-instrument="BANKNIFTY" id="tab_BANKNIFTY">
+                            <span class="inst-name">BANKNIFTY</span>
+                            <div class="inst-price-row">
+                                <span class="inst-price" id="price_BANKNIFTY">--</span>
+                                <span class="inst-change" id="change_BANKNIFTY">--</span>
+                            </div>
+                            <span class="inst-signal" id="signal_BANKNIFTY">SCANNING</span>
+                        </button>
+                        <button class="inst-tab" data-instrument="SENSEX" id="tab_SENSEX">
+                            <span class="inst-name">SENSEX</span>
+                            <div class="inst-price-row">
+                                <span class="inst-price" id="price_SENSEX">--</span>
+                                <span class="inst-change" id="change_SENSEX">--</span>
+                            </div>
+                            <span class="inst-signal" id="signal_SENSEX">SCANNING</span>
+                        </button>
+                        <button class="inst-tab" data-instrument="MIDCPNIFTY" id="tab_MIDCPNIFTY">
+                            <span class="inst-name">MIDCPNIFTY</span>
+                            <div class="inst-price-row">
+                                <span class="inst-price" id="price_MIDCPNIFTY">--</span>
+                                <span class="inst-change" id="change_MIDCPNIFTY">--</span>
+                            </div>
+                            <span class="inst-signal" id="signal_MIDCPNIFTY">SCANNING</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="gateway-status-panel">
+                    <div class="gateway-badge" id="gw_angel" title="AngelOne SmartAPI Status">
+                        <span class="gw-dot"></span> ANGEL
+                    </div>
+                    <div class="gateway-badge" id="gw_fyers" title="Fyers Data Status">
+                        <span class="gw-dot"></span> FYERS
+                    </div>
+                    <div class="gateway-badge" id="gw_yahoo" title="Yahoo Finance Fallback Status">
+                        <span class="gw-dot"></span> YAHOO
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container" id="mainChart">
+                <div class="equity-replacement" id="equityReplacement" aria-live="polite">
+                    <div class="equity-header">
+                        <div>
+                            <span class="equity-kicker">CHART STREAM OFF</span>
+                            <h3>Equity Curve / Drawdown</h3>
+                        </div>
+                        <div class="equity-stats">
+                            <span id="equityNetPnl">Net --</span>
+                            <span id="equityCurrentDd">DD --</span>
+                        </div>
+                    </div>
+                    <div class="equity-canvas-wrap">
+                        <canvas id="equityCurveCanvas"></canvas>
+                    </div>
+                    <div class="equity-footer">
+                        <span id="equityPointCount">Waiting for trade data...</span>
+                        <span id="equityLastTrade">Last trade --</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── RIGHT TOP: LOGS PANEL ─── -->
+        <aside class="right-col">
+
+        <!-- ═══ SYSTEM ACTIVITY LOG ═══ -->
+        <section class="panel sidebar-activity-panel glass-panel" id="activityPanel">
+            <div class="panel-header">
+                <h3>📡 LIVE TAPE</h3>
+                <div class="log-filters">
+                    <button class="log-filter active" data-type="all">ALL</button>
+                    <button class="log-filter" data-type="trade">TRADES</button>
+                    <button class="log-filter" data-type="error">ALERTS</button>
+                    <button class="log-filter" data-type="system">SYS</button>
+                </div>
+            </div>
+            <div class="activity-log-container sidebar-mode">
+                <div class="log-messages" id="activityLog">
+                    <!-- Logs will be dynamically injected here -->
+                    <div class="log-msg system">System initialized...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── RIGHT BOTTOM: INTELLIGENCE PANEL (Unified) ─── -->
+        <section class="panel intel-panel glass-panel" id="intelPanel">
+            <div class="panel-header tabbed-header">
+                <div class="intel-tabs" id="intelTabs">
+                    <button class="intel-tab active" data-target="intelContentView">🧠 Market Intel</button>
+                    <button class="intel-tab" data-target="diagContentView">🛠️ Diagnostics</button>
+                    <button class="intel-tab" data-target="ut1StateContentView">📊 UT1 State</button>
+                    <button class="intel-tab" data-target="pnlContentView">P&L</button>
+                </div>
+                <div class="header-right-actions" style="display:flex; align-items:center; gap:8px;">
+                    <div id="manipulationAlert" class="manipulation-banner" style="display: none;">⚠️ MANIPULATION</div>
+                    <span class="diag-mode" id="diagMode" style="display: none;">--</span>
+                </div>
+            </div>
+            
+            <div class="intel-content-wrapper">
+                <!-- Market Intel View -->
+                <div id="intelContentView" class="intel-view-pane active">
+                    <div class="intel-grid">
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">📊 Volume</div>
+                            <div class="intel-card-value glow-text" id="intelVolRatio">1.0x</div>
+                            <div class="intel-card-label" id="intelVolLabel">vs Avg</div>
+                            <div class="intel-card-bar"><div class="bar-fill" id="intelVolBar"></div></div>
+                        </div>
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">📈 OI</div>
+                            <div class="intel-card-value glow-text" id="intelOI">--</div>
+                            <div class="intel-card-label" id="intelOILabel">Activity</div>
+                        </div>
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">⚖️ PCR</div>
+                            <div class="intel-card-value glow-text" id="intelPCR">--</div>
+                            <div class="intel-card-label" id="intelPCRLabel">Sentiment</div>
+                        </div>
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">🎯 Regime</div>
+                            <div class="intel-card-value glow-text" id="intelRegime">--</div>
+                            <div class="intel-card-label" id="intelRegimeLabel">State</div>
+                        </div>
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">💊 Options Health</div>
+                            <div class="greek-subgrid">
+                                <div class="greek-item"><span>Value </span><b id="greekIV">--</b></div>
+                                <div class="greek-item"><span>Move UP </span><b id="greekCallDelta">--</b></div>
+                                <div class="greek-item"><span>Move DN </span><b id="greekPutDelta">--</b></div>
+                                <div class="greek-item"><span>Decay </span><b id="greekTheta">--</b></div>
+                            </div>
+                            <div class="intel-card-label" id="greekSummary">Interpretation...</div>
+                        </div>
+                        <div class="intel-card glass-card">
+                            <div class="intel-card-title">🐳 Smart Money</div>
+                            <div class="intel-card-value glow-text" id="intelFlow">--</div>
+                            <div class="intel-card-label" id="intelFlowLabel">Buy/Sell Pressure</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnostics View -->
+                <div id="diagContentView" class="intel-view-pane" style="display: none;">
+                    <div class="diag-grid">
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Sources</span>
+                            <b id="diagSources" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Data Age</span>
+                            <b id="diagDataAge" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Scan Speed</span>
+                            <b id="diagScanSpeed" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label" id="diagSessionLabel">Session</span>
+                            <b id="diagSessionStats" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Repaint Guard</span>
+                            <b id="diagRepaintGuard" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Profit Guard</span>
+                            <b id="diagProfitGuard" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Active Peak</span>
+                            <b id="diagActivePeak" class="glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Top Reject</span>
+                            <b id="diagTopReject" class="glow-text">--</b>
+                        </div>
+                    </div>
+                    <div class="diag-reject-list glass-card" id="diagRejectList" style="margin: 0 8px 8px; max-height: 80px; overflow-y: auto;">Waiting for diagnostics...</div>
+                </div>
+
+                <!-- UT1 State View -->
+                <div id="ut1StateContentView" class="intel-view-pane" style="display: none;">
+                    <div class="diag-grid">
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Position</span>
+                            <b id="infoPosition" class="info-value glow-text">⚪ FLAT</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Last Entry</span>
+                            <b id="infoEntry" class="info-value green glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Last Exit</span>
+                            <b id="infoExit" class="info-value red glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Trail Stop</span>
+                            <b id="infoStop" class="info-value glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Stop Dist</span>
+                            <b id="infoStopDist" class="info-value orange glow-text">-- pts</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">ADX</span>
+                            <b id="infoADX" class="info-value glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Confluence</span>
+                            <b id="infoConfluence" class="info-value glow-text">--</b>
+                        </div>
+                        <div class="diag-card glass-card">
+                            <span class="diag-label">Intel Score</span>
+                            <b id="infoIntel" class="info-value glow-text">--</b>
+                        </div>
+                    </div>
+                    <div class="hardware-grid" id="hardwareGrid">
+                        <div class="diag-card glass-card hardware-card">
+                            <span class="diag-label">System RAM</span>
+                            <b id="hwRam" class="info-value glow-text">--</b>
+                            <small id="hwRamSub">--</small>
+                        </div>
+                        <div class="diag-card glass-card hardware-card">
+                            <span class="diag-label">UT1 RAM / CPU</span>
+                            <b id="hwProcess" class="info-value glow-text">--</b>
+                            <small id="hwProcessSub">--</small>
+                        </div>
+                        <div class="diag-card glass-card hardware-card">
+                            <span class="diag-label">Storage</span>
+                            <b id="hwDisk" class="info-value glow-text">--</b>
+                            <small id="hwDiskSub">--</small>
+                        </div>
+                        <div class="diag-card glass-card hardware-card">
+                            <span class="diag-label">Graphics</span>
+                            <b id="hwGpu" class="info-value glow-text">--</b>
+                            <small id="hwGpuSub">--</small>
+                        </div>
+                    </div>
+                </div>
+                <div id="pnlContentView" class="intel-view-pane" style="display: none;">
+                    <div class="pnl-grid">
+                        <div class="pnl-card glass-card">
+                            <span>WIN RATE</span>
+                            <b id="pnlWinRate">--</b>
+                            <small id="pnlWinMeta">--</small>
+                        </div>
+                        <div class="pnl-card glass-card">
+                            <span>PROF FACTOR</span>
+                            <b id="pnlProfitFactor">--</b>
+                            <small id="pnlSharpe">Sharpe --</small>
+                        </div>
+                        <div class="pnl-card glass-card">
+                            <span>RISK METRICS</span>
+                            <b id="pnlDrawdown">DD --</b>
+                            <small id="pnlCurrentDd">Current --</small>
+                        </div>
+                        <div class="pnl-card glass-card">
+                            <span>CAPITAL</span>
+                            <b id="pnlCapital">--</b>
+                            <small id="pnlAllocation">Allocation --</small>
+                        </div>
+                    </div>
+                    <div class="pnl-period-grid">
+                        <div><span>Daily</span><b id="pnlDaily">--</b></div>
+                        <div><span>Weekly</span><b id="pnlWeekly">--</b></div>
+                        <div><span>Monthly</span><b id="pnlMonthly">--</b></div>
+                        <div><span>Avg Hold</span><b id="pnlAvgHold">--</b></div>
+                    </div>
+                    <div class="pnl-split">
+                        <div class="pnl-section glass-card">
+                            <h4>Index / Type / TF</h4>
+                            <div id="pnlBreakdowns" class="pnl-list">Waiting for trades...</div>
+                        </div>
+                        <div class="pnl-section glass-card">
+                            <h4>Winners / Losers / Live</h4>
+                            <div id="pnlExtremes" class="pnl-list">Waiting for trades...</div>
+                            <div id="pnlLivePositions" class="pnl-live-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <!-- ─── BOTTOM: TRADES & PERFORMANCE ─── -->
+        <section class="panel trades-panel" id="tradesPanel">
+            <div class="panel-header">
+                <div class="trades-header-left">
+                    <h3>signals</h3>
+                    <span class="trade-data-mode live" id="tradeDataMode">TRADE MANAGER</span>
+                    <div id="syncIndicator" class="sync-indicator">System Synchronized</div>
+                    <button id="killAllBtn" class="danger-action">KILL ALL</button>
+                    
+                    <!-- Moved Summary Items -->
+                    <div class="header-summary">
+                        <div class="h-summary-item">
+                            <span class="h-summary-label">DAILY P&L:</span>
+                            <span class="h-summary-value" id="dailyPnl">₹0</span>
+                        </div>
+                        <div class="h-summary-item">
+                            <span class="h-summary-label">FUT P&L:</span>
+                            <span class="h-summary-value" id="futPnl">₹0</span>
+                        </div>
+                        <div class="h-summary-item">
+                            <span class="h-summary-label">OPT P&L:</span>
+                            <span class="h-summary-value" id="optPnl">₹0</span>
+                        </div>
+                        <div class="h-summary-item">
+                            <span class="h-summary-label">TRADES:</span>
+                            <span class="h-summary-value" id="totalTrades">0</span>
+                        </div>
+                        <div class="h-summary-item">
+                            <span class="h-summary-label">W/L:</span>
+                            <span class="h-summary-value" id="winLoss">0/0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="perf-badges">
+                    <span class="perf-badge" id="perfWinRate">WR: --%</span>
+                    <span class="perf-badge" id="perfPF">PF: --</span>
+                    <span class="perf-badge" id="perfSR">SR: --</span>
+                    <span class="perf-badge" id="perfDD">DD: ₹--</span>
+                </div>
+            </div>
+            <div class="analytics-strip" id="analyticsStrip">
+                <span>TF: --</span>
+                <span>Grade: --</span>
+                <span>Index: --</span>
+                <span>Type: --</span>
+                <span>Exit: --</span>
+            </div>
+            <div class="panel-content" style="flex: 1; overflow: auto;">
+                <table class="data-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>INSTR</th>
+                            <th>TYPE</th>
+                            <th>DIR</th>
+                            <th>ENTRY</th>
+                            <th>LTP</th>
+                            <th>EXIT PX</th>
+                            <th>TARGET</th>
+                            <th>STOP</th>
+                            <th>RR</th>
+                            <th>P&L</th>
+                            <th>CONF/GR/TF</th>
+                            <th>EXE</th>
+                            <th>ENTRY</th>
+                            <th>EXIT</th>
+                            
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradesBody">
+                        <tr>
+                            <td colspan="15" style="text-align:center; padding:20px; opacity:0.5">No active trades — Scanner searching for signals...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══ SETTINGS MODAL ═══ -->
+    <div class="modal-overlay" id="settingsModal" style="display:none">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⚙️ Settings</h3>
+                <button class="modal-close" id="closeSettings">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group-title">Active Trading Indices</div>
+                <div class="index-selection-grid">
+                    <label class="index-check">
+                        <input type="checkbox" id="checkNifty" checked>
+                        <span class="check-box"></span>
+                        <span class="index-name">NIFTY</span>
+                    </label>
+                    <label class="index-check">
+                        <input type="checkbox" id="checkBN" checked>
+                        <span class="check-box"></span>
+                        <span class="index-name">BANKNIFTY</span>
+                    </label>
+                    <label class="index-check">
+                        <input type="checkbox" id="checkSensex" checked>
+                        <span class="check-box"></span>
+                        <span class="index-name">SENSEX</span>
+                    </label>
+                    <label class="index-check">
+                        <input type="checkbox" id="checkMidcap" checked>
+                        <span class="check-box"></span>
+                        <span class="index-name">MIDCPNIFTY</span>
+                    </label>
+                </div>
+
+                <div class="setting-group-title" style="margin-top:15px">Capital & Risk</div>
+                <div class="setting-group">
+                    <label>Total Demat Capital (₹)</label>
+                    <input type="number" id="settCapitalTotal" value="1100000" step="50000">
+                </div>
+                <div class="setting-group">
+                    <label>FUT Capital (₹)</label>
+                    <input type="number" id="settCapitalFut" value="750000" step="10000">
+                </div>
+                <div class="setting-group">
+                    <label>FUT Risk Per session/day (%)</label>
+                    <input type="number" id="settRiskFut" value="1.5" step="0.5">
+                </div>
+                <div class="setting-group">
+                    <label>FUT Max Stop Loss evry trade (%)</label>
+                    <input type="number" id="settFutureSL" value="0.2" step="0.05">
+                </div>
+                <div class="setting-group">
+                    <label>FUT Transaction Cost (₹)</label>
+                    <input type="number" id="settFutCost" value="200" step="10">
+                </div>
+
+                <div class="setting-group-title" style="margin-top:15px">Options Configuration</div>
+                <div class="setting-group">
+                    <label>OPT Capital (₹)</label>
+                    <input type="number" id="settCapitalOpt" value="300000" step="10000">
+                </div>
+                <div class="setting-group">
+                    <label>OPT Risk Per Trade every trade (%)</label>
+                    <input type="number" id="settRiskOpt" value="12.0" step="0.5">
+                </div>
+                <div class="setting-group">
+                    <label>OPT Max Stop Loss per day on total option capital (%)</label>
+                    <input type="number" id="settOptionSL" value="15" step="1">
+                </div>
+                <div class="setting-group">
+                    <label>OPT Transaction Cost (₹)</label>
+                    <input type="number" id="settOptCost" value="80" step="5">
+                </div>
+                
+                <div class="setting-group-title" style="margin-top:15px">Option Trading Lots</div>
+                <div class="setting-group">
+                    <label>NIFTY Options Lots</label>
+                    <input type="number" id="settLotsNifty" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>BANKNIFTY Options Lots</label>
+                    <input type="number" id="settLotsBN" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>SENSEX Options Lots</label>
+                    <input type="number" id="settLotsSensex" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>MIDCPNIFTY Options Lots</label>
+                    <input type="number" id="settLotsMidcap" value="1" min="1" max="50">
+                </div>
+
+                <div class="setting-group-title" style="margin-top:15px">Futures Trading Lots</div>
+                <div class="setting-group">
+                    <label>NIFTY Futures Lots</label>
+                    <input type="number" id="settLotsFutNifty" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>BANKNIFTY Futures Lots</label>
+                    <input type="number" id="settLotsFutBN" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>SENSEX Futures Lots</label>
+                    <input type="number" id="settLotsFutSensex" value="1" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label>MIDCPNIFTY Futures Lots</label>
+                    <input type="number" id="settLotsFutMidcap" value="1" min="1" max="50">
+                </div>
+
+                <div class="setting-group-title" style="margin-top:15px">Per-Index Trade Limits</div>
+                <div class="setting-group">
+                    <label>Maximum Accepted Trades Per Day</label>
+                    <input type="number" id="settMaxTrades" value="5" min="1" max="20">
+                </div>
+                <div class="setting-group">
+                    <label>Stop After Consecutive Losses</label>
+                    <input type="number" id="settMaxLosses" value="3" min="1" max="10">
+                </div>
+                <div class="setting-group">
+                    <label>Cooldown After Exit (Minutes)</label>
+                    <input type="number" id="settIndexCooldown" value="4" min="0" max="120" step="1">
+                </div>
+
+                <div class="setting-group-title" style="margin-top:15px">System Controls</div>
+                <div class="setting-group">
+                    <label>Backtest Window (Days)</label>
+                    <input type="number" id="settBacktestDays" value="1" min="1" max="14">
+                </div>
+                <div class="setting-group">
+                    <label>Instrument Preference</label>
+                    <select id="settInstPref">
+                        <option value="AUTO">Hybrid (Intelligent Auto)</option>
+                        <option value="FUT">Futures Only</option>
+                        <option value="OPT">Options Only</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Option Strike Selection</label>
+                    <select id="settStrikeSelection">
+                        <option value="ATM">ATM (At the Money)</option>
+                        <option value="ITM">ITM (1 Strike Deep)</option>
+                        <option value="BOTH">BOTH (ATM + ITM)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Signal Grade Preference</label>
+                    <select id="settGradePreference">
+                        <option value="auto">Auto (Smart Logic)</option>
+                        <option value="B">B and Above (Institutional)</option>
+                        <option value="B+">B+ and Above</option>
+                        <option value="A">A and Above</option>
+                        <option value="A+">A+ Only</option>
+                    </select>
+                </div>
+
+                <div class="setting-group" style="margin-top: 15px;">
+                    <label>Cache Management</label>
+                    <button id="resetCacheBtn">🔄 Reset Cache & Re-sync Data</button>
+                </div>
+                <button class="btn-primary" id="saveSettings">Save & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ FYERS AUTH MODAL ═══ -->
+    <div class="modal-overlay" id="fyersAuthModal" style="display:none">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>🔌 Fyers Authentication</h3>
+                <button class="modal-close" id="closeFyersAuth">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; margin-bottom: 15px; color: var(--text-secondary);">
+                    Fyers login opened in a new tab. Complete the login, then paste the final Redirect URL below.
+                </p>
+                <div class="setting-group">
+                    <label>Fyers Redirect URL / Auth Code</label>
+                    <input type="text" id="fyersAuthInput" placeholder="http://127.0.0.1:7000/?s=ok&auth_code=..." style="width: 100%; padding: 10px; background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 4px;">
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <a class="settings-btn" id="openFyersLogin" href="/api/fyers_login" target="_blank" rel="noopener noreferrer" style="flex: 0.7; padding: 10px; border-radius: 6px; text-align: center; text-decoration: none;">Open Login</a>
+                    <button class="btn-primary" id="submitFyersAuth" style="flex: 1;">Connect Fyers</button>
+                    <button class="settings-btn" id="retryFyersLogin" style="flex: 0.5; padding: 10px; border-radius: 6px;">Retry Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TOAST NOTIFICATION ═══ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+<script src="/static/js/app.js?v=4.36-entry-lifecycle"></script>
+
+    <!-- MOCK TAPE INJECTOR -->
+    <script>
+        setTimeout(() => {
+            const mockLogs = [
+                { time: new Date().toLocaleTimeString(), msg: "Scanner Initialized v2.1.0", type: "system" },
+                { time: new Date().toLocaleTimeString(), msg: "[NIFTY] Heavy BUY Volume Pressure Detected", type: "alert" },
+                { time: new Date().toLocaleTimeString(), msg: "Option Chain heartbeat synced", type: "system" },
+                { time: new Date().toLocaleTimeString(), msg: "[BANKNIFTY] Matched LONG Signal. Confidence 95%", type: "trade" },
+                { time: new Date().toLocaleTimeString(), msg: "[SENSEX] Severe SELL Volume Spike Detected", type: "alert" },
+                { time: new Date().toLocaleTimeString(), msg: "[MIDCPNIFTY] Matched SHORT Signal. Confidence 88%", type: "trade" },
+                { time: new Date().toLocaleTimeString(), msg: "Repaint Guard aborted 2 stale entries", type: "system" }
+            ];
+            // Push one by one to see slide-in animation
+            mockLogs.forEach((log, index) => {
+                setTimeout(() => {
+                    const current = window.state ? window.state.fullLog : [];
+                    if (window.updateActivityLog) {
+                        window.updateActivityLog([log, ...current]);
+                    }
+                }, index * 800); // 800ms between each
+            });
+        }, 3000);
+    </script>
+
+    <!-- MOCK TOAST INJECTOR -->
+    <script>
+        setTimeout(() => {
+            if (window.showToast) {
+                setTimeout(() => window.showToast('Scanner Initialized Successfully', 'info'), 0);
+                setTimeout(() => window.showToast('LONG Signal Matched on BANKNIFTY', 'buy'), 800);
+                setTimeout(() => window.showToast('Extreme Volatility Detected', 'alert'), 1600);
+                setTimeout(() => window.showToast('SHORT Signal Matched on NIFTY', 'sell'), 2400);
+            }
+        }, 5000);
+    </script>
+</body>
+
+
+</html>
