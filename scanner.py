@@ -3333,7 +3333,7 @@ class Scanner:
     # â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•
     # PARALLEL DATA FETCH â€” major latency fix
     # â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•
-    async def _fetch_all_data(self, indices: Dict, force=False, timeframes: Optional[List[str]] = None):
+    async def _fetch_all_data(self, indices: Dict, force=False, timeframes: Optional[List[str]] = None, days_back_override: Optional[int] = None):
         """Fetch data for all instruments, only when cache expired"""
         now = time.time()
         tasks = []
